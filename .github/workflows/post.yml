@@ -1,0 +1,79 @@
+name: Auto Post
+
+on:
+  schedule:
+    # カルーセル: 毎日 20:00 JST (= 11:00 UTC)
+    - cron: "0 11 * * *"
+    # リール: 火・木・土 12:00 JST (= 03:00 UTC)
+    - cron: "0 3 * * 2,4,6"
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: "投稿種別"
+        type: choice
+        options: [carousel, reel]
+        default: carousel
+      dry_run:
+        description: "テスト(投稿せず画像/動画だけ生成して確認)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: insta-post
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 種別を決定
+        id: kind
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "kind=${{ inputs.kind }}" >> $GITHUB_OUTPUT
+            echo "dry=${{ inputs.dry_run }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.schedule }}" = "0 3 * * 2,4,6" ]; then
+            echo "kind=reel" >> $GITHUB_OUTPUT; echo "dry=false" >> $GITHUB_OUTPUT
+          else
+            echo "kind=carousel" >> $GITHUB_OUTPUT; echo "dry=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: 依存インストール(日本語フォント・ffmpeg・Chromium)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk ffmpeg > /dev/null
+          pip install -q -r requirements.txt
+          python -m playwright install --with-deps chromium > /dev/null
+
+      - name: 生成 → 公開 → 投稿
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ vars.IG_USER_ID }}
+          IG_API_MODE: ${{ vars.IG_API_MODE || 'facebook' }}
+          PAGES_BASE_URL: ${{ vars.PAGES_BASE_URL }}
+          BRAND_NAME: ${{ vars.BRAND_NAME }}
+          BRAND_HANDLE: ${{ vars.BRAND_HANDLE }}
+          DRY_RUN: ${{ steps.kind.outputs.dry }}
+        run: python src/main.py ${{ steps.kind.outputs.kind }}
+
+      - name: 生成物を保存(確認用)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: output-${{ steps.kind.outputs.kind }}-${{ github.run_number }}
+          path: out/
+          retention-days: 7
