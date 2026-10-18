@@ -25,7 +25,7 @@ IG_API = "https://graph.facebook.com/v21.0" if IG_API_MODE == "facebook" else "h
 
 # --- 挙動 ---
 DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "")  # 空なら自動選択
 
 # --- ブランド ---
 BRAND_NAME = os.environ.get("BRAND_NAME", "マイルでハワイ部")
