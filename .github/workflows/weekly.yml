@@ -1,0 +1,44 @@
+name: Weekly Report & Token Check
+
+on:
+  schedule:
+    # 毎週月曜 09:00 JST (= 日曜 00:00 UTC)
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: insta-post
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests PyYAML
+
+      - name: トークン確認(facebookモードは無期限なので確認のみ)
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ vars.IG_USER_ID }}
+          IG_API_MODE: ${{ vars.IG_API_MODE || 'facebook' }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: python src/refresh_token.py
+
+      - name: 週次レポート作成 → Issue 通知
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ vars.IG_USER_ID }}
+          IG_API_MODE: ${{ vars.IG_API_MODE || 'facebook' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python src/report.py
