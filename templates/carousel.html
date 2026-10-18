@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<style>{% include "brand.css" %}</style>
+</head>
+<body>
+<div class="card">
+  <div class="top">
+    <div class="brand"><span class="dot"></span>{{ brand }}</div>
+    <div class="page">{{ idx }} / {{ total }}</div>
+  </div>
+
+  {% if type == "cover" %}
+  <div class="content cover">
+    <div><span class="tag">保存版</span></div>
+    <h1>{{ post.cover_title | nl2br }}</h1>
+    <div class="bar"></div>
+    <div class="sub">{{ post.cover_sub }}</div>
+  </div>
+  <div class="bottom">
+    <div>{{ handle }}</div>
+    <div class="swipe">スワイプ →</div>
+  </div>
+
+  {% elif type == "body" %}
+  <div class="content body">
+    <div class="num">POINT {{ "%02d" | format(idx - 1) }}</div>
+    <h2>{{ slide.heading | nl2br }}</h2>
+    {% if slide.emphasis %}<div><span class="emph">{{ slide.emphasis }}</span></div>{% endif %}
+    <p>{{ slide.body | nl2br }}</p>
+  </div>
+  <div class="bottom">
+    <div>{{ handle }}</div>
+    <div class="swipe">{% if idx < total %}次へ →{% else %}おわり{% endif %}</div>
+  </div>
+
+  {% else %}
+  <div class="content cta">
+    <div class="icon">✈</div>
+    <h2>{{ post.cta_text | nl2br }}</h2>
+    <p>マイルでハワイに行くための<br>お得情報を毎日お届けしています</p>
+    <div><span class="handle">{{ handle }}</span></div>
+  </div>
+  <div class="bottom">
+    <div>{{ brand }}</div>
+    <div class="swipe">保存して見返す ↓</div>
+  </div>
+  {% endif %}
+</div>
+</body>
+</html>
