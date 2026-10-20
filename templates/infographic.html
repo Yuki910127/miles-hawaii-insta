@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<style>
+{% include "brand.css" %}
+/* ===== 高密度インフォグラフィック(1080x1350) ===== */
+.ig { position: relative; width: 1080px; height: 1350px; overflow: hidden; background: var(--ocean-deep); font-feature-settings: "palt"; }
+.ig::before, .ig::after { display: none; }
+.bgphoto { position: absolute; inset: -20px; background-size: cover; background-position: center; filter: blur(3px) brightness(.75) saturate(1.1); }
+.bgfallback { position: absolute; inset: 0; background: linear-gradient(160deg, #0E7C86 0%, #0A5C64 55%, #F28C28 140%); }
+.wrap { position: absolute; inset: 0; padding: 44px 44px 40px; display: flex; flex-direction: column; gap: 18px; }
+
+/* ヘッダー */
+.head { position: relative; display: grid; grid-template-columns: 1fr 270px; gap: 10px; min-height: 250px; align-items: start; }
+.head .ribbon { display: inline-block; background: #C0392B; color: #fff; font-weight: 900; font-size: 30px; padding: 8px 26px; border-radius: 8px; letter-spacing: .04em; }
+.head h1 { margin-top: 12px; font-size: 80px; line-height: 1.1; word-break: keep-all; overflow-wrap: anywhere; font-weight: 900; color: #fff; text-shadow: 0 4px 0 rgba(0,0,0,.25), 0 8px 24px rgba(0,0,0,.35); letter-spacing: -.01em; }
+.head h1 .hl { color: #FFD166; }
+.head .sub { margin-top: 12px; display: inline-block; background: rgba(255,255,255,.95); color: var(--ink); font-weight: 800; font-size: 30px; padding: 8px 22px; border-radius: 999px; }
+.mcol { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.mascot img { width: 210px; height: 210px; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(0,0,0,.35)); }
+.bubble { position: relative; background: #fff; color: #C0392B; font-weight: 900; font-size: 24px; line-height: 1.25; padding: 12px 16px; border-radius: 16px; max-width: 260px; text-align: center; box-shadow: 0 6px 16px rgba(0,0,0,.25); }
+.bubble::after { content: ""; position: absolute; left: 50%; bottom: -16px; margin-left: -9px; border: 9px solid transparent; border-top-color: #fff; }
+.asof { position: absolute; right: 0; bottom: -6px; color: rgba(255,255,255,.9); font-size: 22px; font-weight: 700; background: rgba(0,0,0,.35); padding: 4px 14px; border-radius: 999px; }
+
+/* ランキング行 */
+.rows { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.row { flex: 1; max-height: 215px; display: grid; grid-template-columns: 120px 1fr 250px; background: rgba(255,255,255,.97); border-radius: 18px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,.25); min-height: 150px; }
+.rank { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; font-weight: 900; gap: 4px; padding: 10px 6px; text-align: center; }
+.rank .letter { font-size: 64px; line-height: 1; }
+.rank .cond { font-size: 20px; line-height: 1.2; font-weight: 700; opacity: .95; }
+.rank.r0 { background: linear-gradient(180deg,#E74C3C,#C0392B); } .rank.r1 { background: linear-gradient(180deg,#F28C28,#D9731A); }
+.rank.r2 { background: linear-gradient(180deg,#0E7C86,#0A5C64); } .rank.r3 { background: linear-gradient(180deg,#6C7A89,#4A5A63); } .rank.r4 { background: linear-gradient(180deg,#8E44AD,#6C3483); }
+.body { padding: 16px 20px 14px 22px; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+.body .name { font-size: 34px; font-weight: 900; color: var(--ink); line-height: 1.2; }
+.body .name small { font-size: 22px; color: var(--ink-soft); font-weight: 700; margin-left: 10px; }
+.body ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; }
+.body li { font-size: 22px; color: var(--ink); line-height: 1.35; padding-left: 30px; position: relative; font-weight: 600; }
+.body li::before { content: "✓"; position: absolute; left: 0; top: 0; color: #fff; background: var(--ocean); border-radius: 50%; width: 24px; height: 24px; font-size: 16px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+.body li.red { color: #C0392B; }
+.stats { border-left: 3px dashed #e5d9c3; display: flex; flex-direction: column; justify-content: center; padding: 10px 16px; gap: 8px; }
+.stat .k { font-size: 19px; color: var(--ink-soft); font-weight: 700; }
+.stat .v { font-size: 40px; font-weight: 900; color: #C0392B; line-height: 1.05; }
+.stat .v small { font-size: 20px; margin-left: 2px; }
+.stat:nth-child(2) .v { color: var(--ocean-deep); }
+
+/* 表 */
+.tblwrap { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+table.tbl { flex: 1; width: 100%; border-collapse: separate; border-spacing: 0; background: rgba(255,255,255,.97); border-radius: 18px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,.25); font-size: 27px; }
+.tbl th { background: var(--ocean-deep); color: #fff; font-weight: 900; padding: 16px 12px; font-size: 25px; }
+.tbl td { padding: 12px 12px; font-size: 29px; border-bottom: 2px solid #f0e6d6; color: var(--ink); font-weight: 700; text-align: center; line-height: 1.3; }
+.tbl td:first-child { text-align: left; font-weight: 900; }
+.tbl tr:nth-child(even) td { background: #FFF7EA; }
+.tbl td.hi { color: #C0392B; font-weight: 900; font-size: 30px; }
+.tbl tr:last-child td { border-bottom: 0; }
+
+/* チェックリスト */
+.checks { background: rgba(255,255,255,.97); border-radius: 18px; padding: 26px 30px; box-shadow: 0 6px 18px rgba(0,0,0,.25); flex: 1; display: flex; flex-direction: column; justify-content: space-around; }
+.check { display: flex; gap: 18px; align-items: flex-start; }
+.check .box { width: 44px; height: 44px; border: 4px solid var(--ocean); border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; color: var(--ocean); font-weight: 900; font-size: 30px; margin-top: 2px; }
+.check .t { font-size: 32px; font-weight: 900; color: var(--ink); line-height: 1.25; }
+.check .d { font-size: 23px; color: var(--ink-soft); font-weight: 600; margin-top: 4px; line-height: 1.35; }
+
+/* フッター */
+.foot { background: rgba(255,255,255,.95); border-radius: 14px; padding: 14px 22px; display: flex; align-items: center; gap: 16px; }
+.foot .bm { width: 34px; height: 42px; background: var(--coral); clip-path: polygon(0 0,100% 0,100% 100%,50% 75%,0 100%); flex: none; }
+.foot .txt { font-size: 25px; font-weight: 800; color: var(--ink); line-height: 1.3; }
+.foot .handle { margin-left: auto; font-size: 22px; font-weight: 700; color: var(--ocean-deep); white-space: nowrap; }
+.note { color: rgba(255,255,255,.9); font-size: 20px; text-align: right; }
+.takeaway { background: #FFD166; color: var(--ink); font-weight: 900; font-size: 30px; padding: 16px 24px; border-radius: 14px; text-align: center; line-height: 1.3; }
+</style>
+</head>
+<body>
+<div class="ig">
+  {% if bg_photo %}<div class="bgphoto" style="background-image:url('{{ bg_photo }}')"></div>{% else %}<div class="bgfallback"></div>{% endif %}
+  <div class="wrap">
+    <div class="head">
+      <div>
+        {% if post.ribbon %}<span class="ribbon">{{ post.ribbon }}</span>{% endif %}
+        <h1>{{ post.title_html | safe }}</h1>
+        {% if post.subtitle %}<span class="sub">{{ post.subtitle }}</span>{% endif %}
+      </div>
+      <div class="mcol">
+        {% if post.bubble %}<div class="bubble">{{ post.bubble | nl2br }}</div>{% endif %}
+        {% if mascot %}<div class="mascot"><img src="{{ mascot }}" alt=""></div>{% endif %}
+      </div>
+      {% if post.as_of %}<div class="asof">{{ post.as_of }}時点</div>{% endif %}
+    </div>
+
+    {% if post.format == "ranking" %}
+    <div class="rows">
+      {% for r in post.rows[:5] %}
+      <div class="row">
+        <div class="rank r{{ loop.index0 }}"><div class="letter">{{ r.rank }}</div>{% if r.condition %}<div class="cond">{{ r.condition | nl2br }}</div>{% endif %}</div>
+        <div class="body">
+          <div class="name">{{ r.name }}{% if r.name_sub %}<small>{{ r.name_sub }}</small>{% endif %}</div>
+          <ul>{% for b in r.bullets[:4] %}<li{% if b.startswith('!') %} class="red"{% endif %}>{{ b.lstrip('!') }}</li>{% endfor %}</ul>
+        </div>
+        <div class="stats">
+          {% for s in r.stats[:2] %}<div class="stat"><div class="k">{{ s.label }}</div><div class="v">{{ s.value }}{% if s.unit %}<small>{{ s.unit }}</small>{% endif %}</div></div>{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% elif post.format == "table" %}
+    <div class="tblwrap">
+    <table class="tbl">
+      <thead><tr>{% for h in post.columns %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for row in post.table_rows[:8] %}
+        <tr>{% for c in row %}<td{% if c.startswith('*') %} class="hi"{% endif %}>{{ c.lstrip('*') | nl2br }}</td>{% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% if post.takeaway %}<div class="takeaway">{{ post.takeaway | nl2br }}</div>{% endif %}
+    {% if post.table_note %}<div class="note">{{ post.table_note }}</div>{% endif %}
+    </div>
+
+    {% elif post.format == "checklist" %}
+    <div class="checks">
+      {% for c in post.check_items[:6] %}
+      <div class="check"><div class="box">{{ loop.index }}</div><div><div class="t">{{ c.title }}</div>{% if c.desc %}<div class="d">{{ c.desc }}</div>{% endif %}</div></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="foot"><div class="bm"></div><div class="txt">{{ post.footer | nl2br }}</div><div class="handle">{{ handle }}</div></div>
+  </div>
+</div>
+</body>
+</html>

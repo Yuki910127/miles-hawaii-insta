@@ -73,3 +73,7 @@ body {
 .cta p { font-size: 40px; color: var(--ink-soft); line-height: 1.6; }
 .cta .handle { margin-top: 56px; display: inline-block; font-size: 44px; font-weight: 700; color: var(--ocean-deep);
   background: var(--white); padding: 20px 48px; border-radius: 999px; }
+
+/* マスコット */
+.mascot-cover { position: absolute; right: 60px; bottom: 150px; width: 300px; height: 300px; object-fit: contain; z-index: 1; filter: drop-shadow(0 10px 18px rgba(0,0,0,.18)); }
+.mascot-cta { width: 300px; height: 300px; object-fit: contain; margin: 0 auto 30px; display: block; filter: drop-shadow(0 10px 18px rgba(0,0,0,.18)); }

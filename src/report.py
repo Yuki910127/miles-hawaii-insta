@@ -73,6 +73,11 @@ def main():
     if need_per_day > 10:
         lines += ["", "> ⚠️ 必要ペースが高めです。残り予算を広告(プロフィール訪問目的)に回す検討をおすすめします。"]
 
+    # 同日の自動リサーチ/ベンチマークの要約を添付
+    for prefix, title in (("research-", "🔎 自動リサーチ"), ("benchmark-", "📈 ベンチマーク")):
+        f = REPORTS / f"{prefix}{today.isoformat()}.md"
+        if f.exists():
+            lines += ["", f"## {title}(同日実行)", ""] + f.read_text(encoding="utf-8").splitlines()[2:60]
     body = "\n".join(lines)
     REPORTS.mkdir(exist_ok=True)
     path = REPORTS / f"{today.isoformat()}.md"

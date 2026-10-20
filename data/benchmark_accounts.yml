@@ -1,0 +1,13 @@
+# ベンチマーク対象(Instagram 公式 Business Discovery API で公開投稿を取得)。
+# 相手がプロアカウント(ビジネス/クリエイター)である必要がある。
+# ここから学ぶのは「何が伸びているか(テーマ・切り口・形式)」だけ。文言・画像は一切流用しない。
+accounts:
+  - username: pipinobu_mile
+    note: デザイン・リールの作り方の参考(構成・リズムを学ぶ)
+  - username: tabizo_travelife
+    note: 情報密度の高い図解・ランキング型の参考
+
+# 取得する直近投稿数(1アカウントあたり)
+media_limit: 40
+# 分析に使う上位件数(エンゲージメント順)
+top_n: 12

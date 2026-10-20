@@ -4,34 +4,84 @@
 <meta charset="utf-8">
 <style>
 {% include "brand.css" %}
-/* リールは背景動画の上に透過で重ねる */
+/* ===== リール用テキストフレーム(1080x1920・透過)。実写の上に「白文字+太い黒フチ」 ===== */
 html, body { background: transparent; }
-.frame { position: relative; width: 1080px; height: 1920px; display: flex; flex-direction: column;
-  justify-content: center; align-items: center; padding: 0 90px; background: transparent; }
-.frame .brand { position: absolute; top: 200px; left: 0; right: 0; text-align: center; color: var(--white);
-  font-size: 34px; font-weight: 700; letter-spacing: .08em; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
-.box { background: rgba(255,247,234,.96); border-radius: 40px; padding: 70px 64px; text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,.35); width: 100%; }
-.hook .box { background: var(--coral); color: var(--white); }
-.hook .txt { font-size: 86px; font-weight: 900; line-height: 1.3; }
-.line .txt { font-size: 74px; font-weight: 900; line-height: 1.35; color: var(--ink); }
-.closing .box { background: var(--ocean); color: var(--white); }
-.closing .txt { font-size: 72px; font-weight: 900; line-height: 1.35; }
-.counter { margin-top: 36px; font-size: 30px; color: var(--ink-soft); font-weight: 700; letter-spacing: .1em; }
-.hook .counter, .closing .counter { color: rgba(255,255,255,.85); }
-.frame .handle { position: absolute; bottom: 330px; left: 0; right: 0; text-align: center; color: var(--white);
-  font-size: 36px; font-weight: 700; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
+.frame { position: relative; width: 1080px; height: 1920px; background: transparent; overflow: hidden; }
+.frame .brand { position: absolute; top: 230px; left: 0; right: 0; text-align: center; color: #fff; font-size: 34px; font-weight: 800; letter-spacing: .08em;
+  -webkit-text-stroke: 7px #111; paint-order: stroke fill; }
+.frame .handle { position: absolute; bottom: 300px; left: 0; right: 0; text-align: center; color: #fff; font-size: 34px; font-weight: 800;
+  -webkit-text-stroke: 7px #111; paint-order: stroke fill; }
+
+/* フチ文字 */
+.ol { color: #fff; font-weight: 900; -webkit-text-stroke: 16px #111; paint-order: stroke fill; letter-spacing: .01em;
+  text-shadow: 0 6px 0 rgba(0,0,0,.35); }
+.ol .em { color: #4DA3FF; }           /* 強調語(青) */
+.ol .em.coral { color: #FF8A3D; }
+.ol .em.yellow { color: #FFD83D; }
+
+/* 中央・大見出し(hook / line) */
+.center { position: absolute; left: 60px; right: 60px; top: 50%; transform: translateY(-50%); text-align: center; }
+.center .txt { font-size: 96px; line-height: 1.28; }
+.hook .center .txt { font-size: 104px; line-height: 1.25; }
+
+/* 巨大数字 */
+.bignum .center .val { font-size: 300px; line-height: 1; -webkit-text-stroke: 22px #111; }
+.bignum .center .sub { font-size: 72px; line-height: 1.3; margin-top: 30px; }
+
+/* 縦書き */
+.vertical .center { top: 54%; }
+.vertical .txt { writing-mode: vertical-rl; display: inline-block; font-size: 120px; line-height: 1.15; height: 1150px; text-align: start;
+  -webkit-text-stroke: 18px #111; }
+.vertical .txt .em { font-size: 170px; }
+
+/* 差し込み画像(ロゴ・券面・小物。白い角丸カードの上に載せる) */
+.insert { position: absolute; left: 50%; transform: translateX(-50%); bottom: 440px; background: #fff; border-radius: 28px; padding: 30px 40px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.45); }
+.insert img { display: block; width: 560px; height: 300px; object-fit: contain; }
+.has-insert .center { top: 36%; }
+
+/* 締め */
+.closing .center .txt { font-size: 92px; }
+.closing .cta { position: absolute; left: 50%; transform: translateX(-50%); bottom: 420px; display: flex; gap: 20px; }
+.closing .cta span { background: #fff; color: #111; font-weight: 900; font-size: 36px; padding: 16px 30px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+.mascot-reel { position: absolute; right: 60px; bottom: 560px; width: 300px; height: 300px; object-fit: contain; filter: drop-shadow(0 12px 24px rgba(0,0,0,.5)); }
 </style>
 </head>
 <body>
-<div class="frame {{ kind }}">
+<div class="frame {{ kind }} {% if insert %}has-insert{% endif %}">
   <div class="brand">{{ brand }}</div>
-  <div class="box">
-    <div class="txt">{{ text | nl2br }}</div>
-    {% if kind == "line" %}<div class="counter">{{ idx - 1 }} / {{ total - 2 }}</div>{% endif %}
-    {% if kind == "closing" %}<div class="counter">{{ handle }}</div>{% endif %}
-  </div>
+
+  {% if kind == "bignum" %}
+    <div class="center ol"><div class="val">{{ value }}</div><div class="sub">{{ text | em }}</div></div>
+  {% elif kind == "vertical" %}
+    <div class="center"><div class="txt ol">{{ text | em }}</div></div>
+  {% else %}
+    <div class="center"><div class="txt ol">{{ text | em }}</div></div>
+  {% endif %}
+
+  {% if insert %}<div class="insert"><img src="{{ insert }}" alt=""></div>{% endif %}
+  {% if kind == "closing" %}<div class="cta"><span>🔖 保存</span><span>👤 フォロー</span></div>{% endif %}
+  {% if mascot %}<img class="mascot-reel" src="{{ mascot }}" alt="">{% endif %}
   <div class="handle">{{ handle }}</div>
 </div>
+<script>
+// 1行が幅に収まらない場合、フォントを自動で縮める(改行位置を崩さない)
+(function(){
+  document.querySelectorAll('.center .txt, .center .sub').forEach(function(el){
+    if (el.closest('.vertical')) return;
+    var lines = el.innerHTML.split('<br>');
+    el.innerHTML = lines.map(function(l){ return '<span class="ln" style="white-space:nowrap;display:inline-block">' + l + '</span>'; }).join('<br>');
+    var size = parseFloat(getComputedStyle(el).fontSize);
+    var max = el.parentElement.clientWidth;
+    var guard = 0;
+    while (guard++ < 30) {
+      var over = false;
+      el.querySelectorAll('.ln').forEach(function(sp){ if (sp.getBoundingClientRect().width > max) over = true; });
+      if (!over || size < 48) break;
+      size -= 4; el.style.fontSize = size + 'px';
+    }
+  });
+})();
+</script>
 </body>
 </html>

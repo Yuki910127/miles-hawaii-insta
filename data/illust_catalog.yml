@@ -1,0 +1,45 @@
+# 挿絵ライブラリのカタログ。assets/illust/<key>.png(または .jpg/.webp)として置く。
+# Gemini はスライド内容に合う key を選ぶ。ファイルが無い key は自動でスキップ(無くても投稿は止まらない)。
+# 画像は白背景のままでOK(乗算合成で白を透かして描画する)。
+illusts:
+  # --- 飛行機・空港 ---
+  plane_takeoff:        離陸する旅客機(青空・雲)
+  plane_window:         飛行機の窓から見える翼と雲海
+  airport_terminal:     空港ターミナルと搭乗ゲート
+  boarding_pass:        搭乗券(TOKYO→HONOLULU)とパスポート
+  business_seat:        ビジネスクラスのフルフラット座席
+  lounge:               空港ラウンジのソファとドリンク
+  # --- 地図・ルート ---
+  japan_map_route:      日本地図と飛行ルートの点線(東京→沖縄など国内線)
+  pacific_route:        日本からハワイへの太平洋横断ルート(地球儀風)
+  hawaii_islands:       ハワイ諸島の地図(オアフ島が強調)
+  # --- ハワイ風景 ---
+  waikiki_beach:        ワイキキビーチとダイヤモンドヘッド
+  palm_sunset:          夕焼けとヤシの木
+  hibiscus_lei:         ハイビスカスとレイ
+  hotel_pool:           リゾートホテルのプールとパラソル
+  hotel_room:           オーシャンビューのホテル客室
+  shave_ice_food:       シェイブアイスとプレートランチ
+  rental_car:           オープンカーで海沿いをドライブ
+  # --- お金・ポイント・カード ---
+  credit_card_gold:     ゴールドのクレジットカード1枚(ロゴなし)
+  credit_cards_stack:   複数のクレジットカードが重なっている(ロゴなし)
+  coins_points:         ポイントコイン(Pマーク)が積み上がる
+  smartphone_app:       スマホのポイントアプリ画面(数字が増える)
+  piggy_bank:           貯金箱とコイン
+  calculator_budget:    電卓と家計簿
+  yen_dollar:           円とドルの両替イメージ
+  shopping_bags:        買い物袋とレシート
+  convenience_store:    コンビニ・スーパーでのカード決済
+  # --- 計画・注意・結論 ---
+  calendar_check:       カレンダーにチェック(予約日・有効期限)
+  clock_deadline:       時計と砂時計(期限・タイミング)
+  checklist:            クリップボードのチェックリスト
+  warning_sign:         三角の注意マーク
+  lightbulb:            ひらめきの電球
+  trophy_goal:          トロフィーとゴールの旗
+  rising_graph:         右肩上がりのグラフ(マイルが増える)
+  gift_box:             ギフトボックス(特典・キャンペーン)
+  family_luggage:       家族分のスーツケース4つ(人物なし)
+  esta_document:        パスポートと渡航認証の書類・スマホ
+  tokyo_tower_fuji:     東京タワーと富士山(日本の出発地)

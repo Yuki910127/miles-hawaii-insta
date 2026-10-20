@@ -106,3 +106,43 @@ def generate_json(system_prompt: str, user_prompt: str, schema: dict | None = No
                 print(f"[gemini] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
     raise RuntimeError(f"Gemini 生成に失敗: {last_err}")
+
+
+def generate_grounded(prompt: str, retries: int = 2) -> tuple[str, list[dict]]:
+    """Google検索グラウンディング付きで回答テキストと出典一覧を返す。
+    返り値: (text, [{"title": "ana.co.jp", "uri": "..."}])
+    """
+    if not GEMINI_API_KEY:
+        raise RuntimeError("GEMINI_API_KEY が未設定です")
+    body = {
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "tools": [{"google_search": {}}],
+        "generationConfig": {"temperature": 0.2},
+    }
+    last_err = None
+    for model in candidate_models()[:4]:
+        url = f"{BASE}/models/{model}:generateContent"
+        for attempt in range(retries):
+            try:
+                r = requests.post(url, params={"key": GEMINI_API_KEY}, json=body, timeout=180)
+                if r.status_code == 404:
+                    break
+                if r.status_code == 429:
+                    time.sleep(30 * (attempt + 1))
+                    continue
+                if r.status_code == 400 and "google_search" in r.text:
+                    # 旧モデル向けツール名で再試行
+                    body["tools"] = [{"google_search_retrieval": {}}]
+                    continue
+                r.raise_for_status()
+                cand = r.json()["candidates"][0]
+                text = "".join(p.get("text", "") for p in cand["content"]["parts"])
+                chunks = cand.get("groundingMetadata", {}).get("groundingChunks", [])
+                sources = [{"title": c["web"].get("title", ""), "uri": c["web"].get("uri", "")} for c in chunks if "web" in c]
+                print(f"[gemini] grounded model={model} sources={len(sources)}")
+                return text, sources
+            except (requests.RequestException, KeyError, IndexError) as e:
+                last_err = e
+                print(f"[gemini] grounded {model} attempt {attempt+1} failed: {e}")
+                time.sleep(5)
+    raise RuntimeError(f"グラウンディング生成に失敗: {last_err}")

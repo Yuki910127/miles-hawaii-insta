@@ -1,0 +1,83 @@
+# 週次の自動リサーチ対象。公式ドメイン以外の情報は採用しない。
+# type: facts … 数値・制度を facts_auto.md に反映 / news … ネタ候補として topics.yml の「最新情報」カテゴリに追加
+
+allowed_domains:
+  - ana.co.jp
+  - jal.co.jp
+  - jal.com
+  - esta.cbp.dhs.gov
+  - cbp.gov
+  - travel.state.gov
+  - gohawaii.jp
+  - gohawaii.com
+  - hawaiitourismauthority.org
+  - hawaii.gov
+  - tax.hawaii.gov
+  - hawaiianairlines.co.jp
+  - hawaiianairlines.com
+  - zipair.net
+  - united.com
+  - delta.com
+  - americanexpress.com
+  - saisoncard.co.jp
+  - smbc-card.com
+  - jcb.co.jp
+  - rakuten-card.co.jp
+  - marriott.com
+  - marriott.co.jp
+  - hilton.com
+  - mofa.go.jp
+  - anamile.ana.co.jp
+
+targets:
+  - key: ana_award_hawaii
+    type: facts
+    title: ANA 国際線特典航空券(日本⇄ハワイ)の必要マイル数
+    question: >
+      ANAマイレージクラブの国際線特典航空券で、日本発ハワイ(ホノルル)往復に必要なマイル数を、
+      エコノミー/プレミアムエコノミー/ビジネスそれぞれ、ローシーズン/レギュラーシーズン/ハイシーズン別に教えてください。
+      ANA公式サイト(ana.co.jp)の情報のみを根拠にし、いつ時点の情報かも示してください。
+  - key: jal_award_hawaii
+    type: facts
+    title: JAL 国際線特典航空券(日本⇄ハワイ)の必要マイル数
+    question: >
+      JALマイレージバンクの国際線特典航空券で、日本発ハワイ(ホノルル)往復に必要なマイル数を、
+      エコノミー/プレミアムエコノミー/ビジネス別に教えてください。JAL国際線特典航空券PLUSの仕組み(基本マイル数と変動)も含め、
+      JAL公式サイト(jal.co.jp)の情報のみを根拠にしてください。
+  - key: fuel_surcharge
+    type: facts
+    title: ANA・JAL 燃油サーチャージ(日本⇄ハワイ)の現在の金額
+    question: >
+      ANAとJALの国際線燃油特別付加運賃(燃油サーチャージ)について、日本⇄ハワイ区間の現在の片道金額と適用期間を、
+      それぞれの公式サイトの情報のみを根拠に教えてください。
+  - key: esta_fee
+    type: facts
+    title: ESTA 申請料金
+    question: >
+      米国ESTA(電子渡航認証システム)の現在の申請料金(米ドル)と、改定があればその日付を、
+      米国政府公式サイト(esta.cbp.dhs.gov / cbp.gov / travel.state.gov)の情報のみを根拠に教えてください。
+  - key: hawaii_taxes
+    type: facts
+    title: ハワイの宿泊税(TAT)・グリーンフィー
+    question: >
+      ハワイ州の宿泊税(Transient Accommodations Tax)の現在の税率と、2026年に施行された観光関連の税率引き上げ(いわゆるグリーンフィー)の内容を、
+      ハワイ州政府またはハワイ州観光局の公式情報のみを根拠に教えてください。
+  - key: mile_cards_fees
+    type: facts
+    title: 主要マイル系クレジットカードの年会費・マイル還元率
+    question: >
+      次のカードの現在の年会費(税込)と、基本のマイル還元率(100円あたり何マイル相当か)を、各カード会社の公式サイトの情報のみを根拠に教えてください:
+      ANAカード(一般・ワイドゴールド)、JALカード(普通・CLUB-Aゴールド)、Marriott Bonvoyアメリカン・エキスプレス・カード(通常・プレミアム)、
+      セゾンプラチナ・ビジネス・アメリカン・エキスプレス・カード。分からないものは「不明」としてください。
+  - key: airline_news
+    type: news
+    title: ANA・JAL・ハワイ路線の最新ニュース
+    question: >
+      直近30日以内に、ANA・JAL・ハワイアン航空・ZIPAIRが公式に発表した、ハワイ路線・マイル・特典航空券・キャンペーンに関するニュースを
+      最大5件、公式サイトのプレスリリース・お知らせのみを根拠に、日付付きで教えてください。
+  - key: hawaii_news
+    type: news
+    title: ハワイ旅行に関わる公式の最新情報
+    question: >
+      直近30日以内に、ハワイ州観光局(gohawaii)・ハワイ州政府・米国政府が公式に発表した、日本からの旅行者に関係する
+      制度変更・料金・入国・観光ルールのニュースを最大5件、日付付きで教えてください。公式サイトのみを根拠にしてください。

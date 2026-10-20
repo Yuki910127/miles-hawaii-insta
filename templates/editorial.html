@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<style>
+{% include "brand.css" %}
+/* ===== 編集記事スタイル(参考レイアウト準拠・配色はブランドのティール×コーラル) ===== */
+:root { --nv: #0A5C64; --nv2: #0E7C86; --rd: #F28C28; --rd2: #E2572B; --sand: #FFF7EA; --sky: #EAF6FA; --yl: #FFF6D6; --ylb: #D9B64A; }
+.ed { position: relative; width: 1080px; height: 1350px; overflow: hidden; color: var(--nv); background: var(--sky);
+  font-feature-settings: "palt"; }
+.ed::before, .ed::after { display: none; }
+/* 空と雲 */
+.sky { position: absolute; inset: 0; background:
+  radial-gradient(ellipse 420px 140px at 18% 30%, rgba(255,255,255,.95), rgba(255,255,255,0) 70%),
+  radial-gradient(ellipse 520px 160px at 78% 22%, rgba(255,255,255,.95), rgba(255,255,255,0) 70%),
+  radial-gradient(ellipse 600px 180px at 50% 62%, rgba(255,255,255,.9), rgba(255,255,255,0) 70%),
+  radial-gradient(ellipse 500px 160px at 15% 80%, rgba(255,255,255,.9), rgba(255,255,255,0) 70%),
+  linear-gradient(180deg, #BFE3F0 0%, #E6F3F8 45%, #FFFFFF 100%); }
+.photo { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: .22; filter: saturate(1.1); }
+/* 非対称カーブ枠(左上が厚い / 右下が厚い)。赤いライン付き */
+.arc-top { position: absolute; width: 5000px; height: 5000px; border-radius: 50%; background: var(--nv); left: -2420px; top: -4790px; box-shadow: 0 0 0 14px var(--rd); }
+.arc-bottom { position: absolute; width: 5000px; height: 5000px; border-radius: 50%; background: var(--nv); left: -1500px; top: 1250px; box-shadow: 0 0 0 14px var(--rd); }
+.pager { position: absolute; top: 40px; right: 50px; background: rgba(10,92,100,.9); color: #fff; font-weight: 800; font-size: 28px; padding: 8px 22px; border-radius: 999px; z-index: 6; }
+.brandtag { position: absolute; top: 44px; left: 50px; color: #fff; font-weight: 800; font-size: 26px; z-index: 6; letter-spacing: .04em; }
+.em { color: var(--rd2); font-weight: 900; }
+.ul { text-decoration: underline; text-decoration-color: var(--rd2); text-decoration-thickness: 10px; text-underline-offset: 12px; }
+.spark { position: absolute; z-index: 5; font-size: 44px; color: var(--rd2); }
+.spark.n { color: var(--nv); }
+.spark.s { font-size: 28px; }
+.deco { position: absolute; z-index: 4; }
+.route { position: absolute; z-index: 3; }
+.illust { mix-blend-mode: multiply; object-fit: contain; }   /* 白背景を透かす */
+.bd .toprow { display: flex; gap: 20px; align-items: flex-start; }
+.bd .toprow .texts { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.bd .toprow .illust { width: 360px; height: 300px; flex: none; }
+.bd .wrap.with-mascot .toprow .illust { width: 300px; height: 250px; }
+.bd .box .inner { display: flex; align-items: center; gap: 20px; }
+.bd .box .inner .illust { width: 220px; height: 170px; flex: none; }
+.bd .box .inner .val { font-size: 56px; white-space: nowrap; }
+.bd .box .inner .val small { white-space: normal; }
+.cv .illust-cover { position: absolute; left: 400px; bottom: 310px; width: 340px; height: 230px; z-index: 5; }
+.mascot-ed { position: absolute; z-index: 7; object-fit: contain; filter: drop-shadow(0 12px 20px rgba(0,0,0,.2)); }
+
+/* ---- 表紙 ---- */
+.cv .ribbon { position: absolute; left: 0; top: 150px; background: var(--rd2); color: #fff; font-weight: 900; font-size: 50px; padding: 18px 48px 18px 70px; z-index: 6;
+  clip-path: polygon(0 0, 100% 0, 90% 50%, 100% 100%, 0 100%); border: 4px solid #fff; border-left: 0; }
+.cv .title { position: absolute; left: 40px; right: 40px; top: 300px; z-index: 5; text-align: center; }
+.cv .title .ln { display: block; font-size: 118px; line-height: 1.2; font-weight: 900; letter-spacing: -.01em; color: var(--nv);
+  text-shadow: 0 0 22px #fff, 0 0 22px #fff, 0 4px 0 #fff; }
+.cv .title .ln.small { font-size: 96px; }
+.cv .sub { position: absolute; left: 50%; transform: translateX(-50%); top: 745px; background: var(--nv); color: #fff; font-weight: 800; font-size: 36px; padding: 16px 40px; border-radius: 999px; z-index: 6; white-space: nowrap; border: 4px solid #fff; }
+.cv .bottombox { position: absolute; left: 300px; right: 80px; bottom: 120px; background: #fff; border: 7px solid var(--nv); border-radius: 30px; padding: 30px 36px; font-size: 42px; font-weight: 900; line-height: 1.4; z-index: 6; box-shadow: 0 10px 0 rgba(10,92,100,.18); }
+.cv .bottombox .em { font-size: 52px; }
+
+/* ---- 中面 共通 ---- */
+.bd .wrap { position: absolute; left: 50px; right: 50px; top: 170px; bottom: 170px; display: flex; flex-direction: column; gap: 18px; z-index: 5; }
+.bd .wrap.with-mascot .shrink { margin-right: 300px; }
+.bd .hbox { align-self: flex-start; background: #fff; border: 6px solid var(--nv); border-radius: 24px; padding: 14px 34px 14px 20px; display: flex; align-items: center; gap: 18px; box-shadow: 0 8px 0 rgba(10,92,100,.15); }
+.bd .hbox .num { width: 66px; height: 66px; border-radius: 50%; background: var(--rd2); color: #fff; font-weight: 900; font-size: 40px; display: flex; align-items: center; justify-content: center; flex: none; }
+.bd .hbox .t { font-size: 60px; font-weight: 900; line-height: 1.15; }
+.bd .para { font-size: 36px; line-height: 1.55; font-weight: 800; }
+.bd .para.small { font-size: 32px; font-weight: 700; }
+.bd .box { position: relative; background: #fff; border: 6px solid var(--nv); border-radius: 26px; padding: 26px 30px; box-shadow: 0 8px 0 rgba(10,92,100,.12); }
+.bd .box .tag { position: absolute; left: -6px; top: -30px; background: var(--rd2); color: #fff; font-weight: 900; font-size: 28px; padding: 6px 24px; border-radius: 14px 14px 14px 0; }
+.bd .box .txt { font-size: 32px; line-height: 1.5; font-weight: 800; }
+.bd .box .val { font-size: 64px; font-weight: 900; color: var(--rd2); line-height: 1.1; margin-top: 10px; }
+.bd .box .val small { font-size: 28px; color: var(--nv); margin-left: 10px; font-weight: 800; }
+.bd .caut { position: relative; background: #fff; border: 6px solid var(--nv); border-radius: 26px; padding: 56px 30px 22px; box-shadow: 0 8px 0 rgba(10,92,100,.12); }
+.bd .caut .tag { position: absolute; left: -6px; top: -6px; background: #1F2A30; color: #fff; font-weight: 900; font-size: 26px; padding: 8px 22px; border-radius: 20px 0 14px 0; }
+.bd .caut li { list-style: none; font-size: 30px; font-weight: 800; line-height: 1.5; padding-left: 36px; position: relative; }
+.bd .caut li::before { content: "•"; position: absolute; left: 8px; }
+.bd .caut.yellow { background: var(--yl); border: 5px dashed var(--ylb); padding: 22px 30px 22px 100px; }
+.bd .caut.yellow .tag { display: none; }
+.bd .caut.yellow::before { content: "!"; position: absolute; left: 26px; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; background: #E0B400; color: #fff; font-weight: 900; font-size: 34px; display: flex; align-items: center; justify-content: center; }
+.bd .concl { margin-top: auto; background: #fff; border: 6px solid var(--nv); border-radius: 26px; padding: 26px 30px 26px 110px; font-size: 36px; font-weight: 900; line-height: 1.45; position: relative; box-shadow: 0 8px 0 rgba(10,92,100,.12); }
+.bd .concl::before { content: "✈"; position: absolute; left: 32px; top: 50%; transform: translateY(-50%); color: var(--nv); font-size: 56px; }
+.bd .concl.band { background: var(--nv); color: #fff; border-color: var(--nv); }
+.bd .concl.band::before { content: "⚑"; color: var(--rd2); }
+.bd .concl.band .em { color: #FFD166; }
+/* ゴール型(巨大数字) */
+.bd .irow { display: flex; align-items: center; gap: 20px; background: #fff; border: 6px solid var(--nv); border-radius: 24px; padding: 14px 24px; font-size: 30px; font-weight: 800; line-height: 1.45; box-shadow: 0 8px 0 rgba(10,92,100,.12); }
+.bd .irow .ic { width: 72px; height: 72px; border-radius: 50%; background: var(--nv); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 38px; flex: none; }
+.bd .bignum { text-align: center; background: #fff; border: 7px solid var(--rd2); border-radius: 30px; padding: 18px 20px 20px; box-shadow: 0 8px 0 rgba(226,87,43,.15); }
+.bd .bignum .lbl { display: inline-block; background: var(--rd2); color: #fff; font-weight: 900; font-size: 32px; padding: 8px 30px; border-radius: 999px; }
+.bd .bignum .v { font-size: 130px; font-weight: 900; color: var(--rd2); line-height: 1.05; letter-spacing: -.02em; white-space: nowrap; }
+.bd .bignum .u { font-size: 60px; font-weight: 900; color: var(--rd2); line-height: 1; }
+.bd .wrap.with-mascot .bignum .v { font-size: 120px; }
+.bd .hgoal { text-align: center; margin-top: 60px; }
+.bd .hgoal .pre { font-size: 46px; font-weight: 900; }
+.bd .hgoal .main { font-size: 96px; font-weight: 900; line-height: 1.1; }
+
+/* ---- CTA ---- */
+.ct .wrap { position: absolute; left: 60px; right: 60px; top: 230px; bottom: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; z-index: 5; text-align: center; }
+.ct h2 { font-size: 72px; font-weight: 900; line-height: 1.3; background: #fff; border: 6px solid var(--nv); border-radius: 30px; padding: 30px 40px; }
+.ct p { font-size: 36px; font-weight: 800; line-height: 1.6; }
+.ct .hd { background: var(--nv); color: #fff; font-weight: 800; font-size: 44px; padding: 20px 50px; border-radius: 999px; border: 4px solid #fff; }
+.ct .acts { display: flex; gap: 20px; }
+.ct .act { border: 5px solid var(--nv); border-radius: 20px; padding: 14px 26px; font-size: 32px; font-weight: 900; background: #fff; }
+</style>
+</head>
+<body>
+<div class="ed {{ 'cv' if type == 'cover' else ('ct' if type == 'cta' else 'bd') }}">
+  <div class="sky"></div>
+  {% if bg_photo %}<div class="photo" style="background-image:url('{{ bg_photo }}')"></div>{% endif %}
+  <div class="arc-top"></div>
+  <div class="arc-bottom"></div>
+  <div class="brandtag">{{ brand }}</div>
+  <div class="pager">{{ idx }} / {{ total }}</div>
+
+  {% if type == "cover" %}
+    <div class="ribbon">{{ post.ribbon or "保存版" }}</div>
+    <svg class="route" width="700" height="260" viewBox="0 0 700 260" style="left:90px; top:120px;"><path d="M20 230 C 160 120, 330 70, 560 60" fill="none" stroke="#0A5C64" stroke-width="5" stroke-dasharray="14 16" stroke-linecap="round"/><text x="560" y="70" font-size="60" fill="#0A5C64" transform="rotate(20 560 70)">✈</text></svg>
+    {% if deco.plane %}<img class="deco" src="{{ deco.plane }}" style="right:30px; top:60px; width:420px;">{% endif %}
+    <span class="spark" style="left:70px; top:420px;">✦</span><span class="spark n s" style="left:120px; top:520px;">✦</span>
+    <span class="spark n" style="right:70px; top:380px;">✦</span><span class="spark s" style="right:110px; top:600px;">✦</span>
+    <div class="title">
+      {% for ln in post.title_lines[:3] %}<span class="ln {% if loop.index == 3 %}small{% endif %}">{{ ln | em }}</span>{% endfor %}
+    </div>
+    {% if post.subtitle %}<div class="sub">{{ post.subtitle }}</div>{% endif %}
+    {% if illust %}<img class="illust illust-cover" src="{{ illust }}" alt="">{% elif deco.ticket %}<img class="deco" src="{{ deco.ticket }}" style="left:420px; bottom:330px; width:300px; transform:rotate(-8deg);">{% endif %}
+    {% if deco.suitcase %}<img class="deco" src="{{ deco.suitcase }}" style="right:70px; bottom:320px; width:170px;">{% endif %}
+    {% if deco.hibiscus %}<img class="deco" src="{{ deco.hibiscus }}" style="right:16px; bottom:60px; width:150px; z-index:5;">{% endif %}
+    {% if mascot %}<img class="mascot-ed" src="{{ mascot }}" style="left:20px; bottom:100px; width:330px; height:330px;">{% endif %}
+    {% if post.bottom_box %}<div class="bottombox">{{ post.bottom_box | em }}</div>{% endif %}
+
+  {% elif type == "body" %}
+    {% if deco.plane %}<img class="deco" src="{{ deco.plane }}" style="right:40px; top:110px; width:220px;">{% endif %}
+    <svg class="route" width="360" height="120" viewBox="0 0 360 120" style="right:240px; top:120px;"><path d="M10 110 C 120 60, 220 30, 350 20" fill="none" stroke="#0A5C64" stroke-width="4" stroke-dasharray="10 12" stroke-linecap="round"/></svg>
+    <div class="wrap {% if mascot %}with-mascot{% endif %}">
+      {% if slide.big_value %}
+        {# ---- ゴール型: 大見出し + アイコン行 + 巨大数字 + 注意(黄) + 紺の結論帯 ---- #}
+        <div class="hgoal">{% if slide.pre_heading %}<div class="pre">{{ slide.pre_heading }}</div>{% endif %}<div class="main">{{ slide.heading | em }}</div></div>
+        <div class="toprow shrink">
+          {% if slide.lead %}<div class="irow" style="flex:1"><div class="ic">📋</div><div>{{ slide.lead | em }}</div></div>{% endif %}
+          {% if illust %}<img class="illust" src="{{ illust }}" alt="" style="width:220px;height:160px">{% endif %}
+        </div>
+        <div class="bignum shrink">{% if slide.big_label %}<div class="lbl">{{ slide.big_label }}</div>{% endif %}<div class="v">{{ slide.big_value }}</div>{% if slide.big_unit %}<div class="u">{{ slide.big_unit }}</div>{% endif %}</div>
+        {% if slide.body %}<div class="irow shrink"><div class="ic">🌴</div><div>{{ slide.body | em }}</div></div>{% endif %}
+        {% if slide.cautions %}<ul class="caut yellow shrink">{% for c in slide.cautions[:2] %}<li>{{ c | em }}</li>{% endfor %}</ul>{% endif %}
+        {% if slide.conclusion %}<div class="concl band shrink">{{ slide.conclusion | em }}</div>{% endif %}
+      {% else %}
+        {# ---- 解説型: 見出しボックス + 本文 + たとえば + 注意点 + 結論 ---- #}
+        <div class="hbox"><div class="num">{{ idx - 1 }}</div><div class="t">{{ slide.heading | em }}</div></div>
+        <div class="toprow {% if not illust %}shrink{% endif %}">
+          <div class="texts">
+            {% if slide.lead %}<div class="para">{{ slide.lead | em }}</div>{% endif %}
+            {% if slide.body %}<div class="para small">{{ slide.body | em }}</div>{% endif %}
+          </div>
+          {% if illust and not slide.example_text %}<img class="illust" src="{{ illust }}" alt="">{% endif %}
+        </div>
+        {% if slide.example_text %}
+        <div class="box shrink"><div class="tag">{{ slide.example_title or "たとえば" }}</div>
+          <div class="inner">{% if illust %}<img class="illust" src="{{ illust }}" alt="">{% endif %}
+            <div><div class="txt">{{ slide.example_text | em }}</div>{% if slide.example_value %}<div class="val">{{ slide.example_value }}{% if slide.example_value_note %}<small>{{ slide.example_value_note }}</small>{% endif %}</div>{% endif %}</div>
+          </div></div>
+        {% endif %}
+        {% if slide.cautions %}
+        <ul class="caut shrink"><div class="tag">⚠ 注意点</div>{% for c in slide.cautions[:3] %}<li>{{ c | em }}</li>{% endfor %}</ul>
+        {% endif %}
+        {% if slide.conclusion %}<div class="concl shrink">{{ slide.conclusion | em }}</div>{% endif %}
+      {% endif %}
+    </div>
+    {% if mascot %}<img class="mascot-ed" src="{{ mascot }}" style="right:20px; bottom:170px; width:320px; height:320px;">{% endif %}
+
+  {% else %}
+    <div class="wrap">
+      {% if mascot %}<img src="{{ mascot }}" style="width:320px; height:320px; object-fit:contain;">{% elif deco.hibiscus %}<img src="{{ deco.hibiscus }}" style="width:200px;">{% endif %}
+      <h2>{{ post.cta_text | em }}</h2>
+      <p>マイルを貯めてハワイへ。<br>お得情報を毎日お届けしています</p>
+      <div class="acts"><div class="act">🔖 保存</div><div class="act">👤 フォロー</div><div class="act">💬 コメント</div></div>
+      <div class="hd">{{ handle }}</div>
+    </div>
+  {% endif %}
+</div>
+</body>
+</html>

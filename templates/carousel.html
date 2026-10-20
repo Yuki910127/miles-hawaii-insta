@@ -18,6 +18,7 @@
     <div class="bar"></div>
     <div class="sub">{{ post.cover_sub }}</div>
   </div>
+  {% if mascot %}<img class="mascot-cover" src="{{ mascot }}" alt="">{% endif %}
   <div class="bottom">
     <div>{{ handle }}</div>
     <div class="swipe">スワイプ →</div>
@@ -37,7 +38,7 @@
 
   {% else %}
   <div class="content cta">
-    <div class="icon">✈</div>
+    {% if mascot %}<img class="mascot-cta" src="{{ mascot }}" alt="">{% else %}<div class="icon">✈</div>{% endif %}
     <h2>{{ post.cta_text | nl2br }}</h2>
     <p>マイルでハワイに行くための<br>お得情報を毎日お届けしています</p>
     <div><span class="handle">{{ handle }}</span></div>

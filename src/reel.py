@@ -7,9 +7,10 @@ import subprocess
 from pathlib import Path
 from config import ASSETS, OUT
 
-HOOK_SEC = 2.5
-LINE_SEC = 3.0
+HOOK_SEC = 2.2
+LINE_SEC = 2.6
 CLOSE_SEC = 3.0
+SEC_BY_KIND = {"hook": 2.2, "line": 2.6, "bignum": 2.4, "vertical": 2.8, "closing": 3.0}
 
 
 def _pick(dir_: Path, exts: tuple[str, ...]) -> Path | None:
@@ -17,9 +18,12 @@ def _pick(dir_: Path, exts: tuple[str, ...]) -> Path | None:
     return random.choice(files) if files else None
 
 
-def build_reel(frames: list[Path], slug: str) -> Path:
+def build_reel(frames: list[Path], slug: str, kinds: list[str] | None = None) -> Path:
     out = OUT / f"{slug}.mp4"
-    durations = [HOOK_SEC] + [LINE_SEC] * (len(frames) - 2) + [CLOSE_SEC]
+    if kinds and len(kinds) == len(frames):
+        durations = [SEC_BY_KIND.get(k, LINE_SEC) for k in kinds]
+    else:
+        durations = [HOOK_SEC] + [LINE_SEC] * (len(frames) - 2) + [CLOSE_SEC]
     total = sum(durations)
 
     bg = _pick(ASSETS / "reel_bg", (".mp4", ".mov"))

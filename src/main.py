@@ -26,7 +26,7 @@ def run(kind: str):
         media_id = publish_carousel(urls, post["full_caption"])
     else:
         frames = render_reel_frames(post, slug)
-        video = build_reel(frames, slug)
+        video = build_reel(frames, slug, post.get("_frame_kinds"))
         urls = publish_files([video], f"media: {slug}")
         media_id = publish_reel(urls[0], post["full_caption"])
 
