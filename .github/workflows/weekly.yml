@@ -17,7 +17,7 @@ permissions:
 jobs:
   weekly:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,6 +34,22 @@ jobs:
           IG_API_MODE: ${{ vars.IG_API_MODE || 'facebook' }}
           GH_PAT: ${{ secrets.GH_PAT }}
         run: python src/refresh_token.py
+
+      - name: 自動リサーチ(公式サイト限定 → facts_auto.md / news.md 更新)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python src/research.py
+        continue-on-error: true
+
+      - name: ベンチマーク分析(公式API Business Discovery → trends.md / style_hints.md)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ vars.IG_USER_ID }}
+          IG_API_MODE: ${{ vars.IG_API_MODE || 'facebook' }}
+        run: python src/benchmark.py
+        continue-on-error: true
 
       - name: 週次レポート作成 → Issue 通知
         env:
