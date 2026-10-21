@@ -237,13 +237,33 @@ seed_idea を出発点に、カテゴリ「{cat['name']}」で{'カルーセル(
 既出テーマと切り口が被るなら、別の角度(初心者向け/比較/失敗談/チェックリスト/数字で見る等)に変えてください。"""
 
     schema = CAROUSEL_SCHEMA if kind == "carousel" else REEL_SCHEMA
-    data = generate_json(SYSTEM, user_prompt, schema)
+    required = ["topic", "slides", "caption"] if kind == "carousel" else ["topic", "frames", "caption"]
+
+    # モデルがスキーマを一部無視して返すことがあるので、必須キーが欠けていたら最大3回まで作り直す
+    data = None
+    for attempt in range(3):
+        d = generate_json(SYSTEM, user_prompt + ("" if attempt == 0 else
+                          f"\n\n※前回の出力には {', '.join(k for k in required if k not in (d or {}))} が欠けていました。必ず全ての必須キーを含めてください。"),
+                          schema)
+        print(f"[gen] keys={sorted(d.keys())}")
+        if all(d.get(k) for k in required):
+            data = d
+            break
+        print(f"[gen] 必須キー不足 → 再生成 ({attempt+1}/3)")
+    if data is None:
+        raise RuntimeError(f"Gemini の出力に必須キーが揃いませんでした: {required}")
+    data.setdefault("topic", seed)
+
     if kind == "carousel":
         data = _sanitize_carousel(data)
     else:
-        fr = [f for f in (data.get("frames") or []) if f.get("text")]
-        if not fr or fr[0]["kind"] != "hook":
-            fr.insert(0, {"kind": "hook", "text": fr[0]["text"] if fr else data["topic"]})
+        fr = [f for f in (data.get("frames") or []) if isinstance(f, dict) and f.get("text")]
+        for f in fr:
+            f["kind"] = f.get("kind") or "line"
+        if not fr:
+            raise RuntimeError("リールのフレームが生成されませんでした")
+        if fr[0]["kind"] != "hook":
+            fr[0]["kind"] = "hook"
         if fr[-1]["kind"] != "closing":
             fr.append({"kind": "closing", "text": "保存して\\nあとで見返してね"})
         data["frames"] = fr[:10]

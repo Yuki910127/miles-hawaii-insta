@@ -45,6 +45,21 @@ so that white and dark text overlays remain readable. Seamless loop if possible.
 
 ---
 
+### 25MBを超える動画は「Releases」に置く(画質を落とさない方法・推奨)
+
+GitHubのブラウザアップロードは1ファイル25MBまでですが、**Releases** なら1ファイル2GBまで置けます。
+システムは投稿のたびに Releases の `reel-bg` から動画を取得するので、**1080pや4Kのまま**アップロードできます(720pに落とす必要なし)。
+
+1. リポジトリのトップ右側「**Releases**」→「**Create a new release**」(初回)
+2. 「Choose a tag」→ `reel-bg` と入力 → 「Create new tag: reel-bg」をクリック
+3. Release title: `reel-bg`(何でも可)
+4. 下の「Attach binaries by dropping them here」に動画をまとめてドラッグ(アップロード完了まで待つ)
+5. 緑の「**Publish release**」
+6. 追加・差し替えは、Releases → `reel-bg` の右の鉛筆(Edit)→ ドラッグ → 「Update release」
+
+`assets/reel_bg/` に入っている動画と Releases の動画は**両方**使われます(ランダム選択)。
+720p以下の素材は自動で軽くシャープがかかりますが、1080p以上を推奨します。横動画は上下にぼかし背景を敷いて配置されます。
+
 ## ③ BGM(任意)
 
 Genspark に音楽生成がある場合:
