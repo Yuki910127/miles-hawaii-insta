@@ -2,17 +2,17 @@ name: Auto Post
 
 on:
   schedule:
-    # カルーセル: 毎日 20:00 JST (= 11:00 UTC)
+    # 作り置き画像のリール: 毎日 20:00 JST (= 11:00 UTC)。在庫切れならカルーセルで代替
     - cron: "0 11 * * *"
-    # リール: 火・木・土 12:00 JST (= 03:00 UTC)
+    # 実写リール: 火・木・土 12:00 JST (= 03:00 UTC)
     - cron: "0 3 * * 2,4,6"
   workflow_dispatch:
     inputs:
       kind:
         description: "投稿種別"
         type: choice
-        options: [carousel, reel]
-        default: carousel
+        options: [queue, carousel, reel]
+        default: queue
       dry_run:
         description: "テスト(投稿せず画像/動画だけ生成して確認)"
         type: boolean
@@ -24,6 +24,7 @@ concurrency:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   post:
@@ -43,7 +44,7 @@ jobs:
           elif [ "${{ github.event.schedule }}" = "0 3 * * 2,4,6" ]; then
             echo "kind=reel" >> $GITHUB_OUTPUT; echo "dry=false" >> $GITHUB_OUTPUT
           else
-            echo "kind=carousel" >> $GITHUB_OUTPUT; echo "dry=false" >> $GITHUB_OUTPUT
+            echo "kind=queue" >> $GITHUB_OUTPUT; echo "dry=false" >> $GITHUB_OUTPUT
           fi
 
       - uses: actions/setup-python@v5
@@ -57,6 +58,7 @@ jobs:
           sudo apt-get install -y -qq fonts-noto-cjk ffmpeg > /dev/null
           pip install -q -r requirements.txt
           python -m playwright install --with-deps chromium > /dev/null
+
       - name: リール背景動画を Releases から取得(25MB超のファイル用・無ければスキップ)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -65,6 +67,7 @@ jobs:
           gh release download reel-bg --dir assets/reel_bg --pattern "*.mp4" --pattern "*.mov" --pattern "*.MOV" --pattern "*.MP4" --clobber || echo "release reel-bg なし(リポジトリ内の動画を使用)"
           ls -la assets/reel_bg || true
         continue-on-error: true
+
       - name: 生成 → 公開 → 投稿
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -75,6 +78,7 @@ jobs:
           BRAND_NAME: ${{ vars.BRAND_NAME }}
           BRAND_HANDLE: ${{ vars.BRAND_HANDLE }}
           DRY_RUN: ${{ steps.kind.outputs.dry }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python src/main.py ${{ steps.kind.outputs.kind }}
 
       - name: 生成物を保存(確認用)
