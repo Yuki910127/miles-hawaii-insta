@@ -83,10 +83,15 @@ def generate_json(system_prompt: str, user_prompt: str, schema: dict | None = No
         url = f"{BASE}/models/{model}:generateContent"
         for attempt in range(retries):
             try:
-                r = requests.post(url, params={"key": GEMINI_API_KEY}, json=body, timeout=120)
+                r = requests.post(url, params={"key": GEMINI_API_KEY}, json=body, timeout=90)
                 if r.status_code == 404:
                     print(f"[gemini] {model} は利用不可(404)。次の候補へ")
                     last_err = f"404 for {model}"
+                    break
+                if r.status_code in (500, 502, 503, 504):
+                    # 混雑・障害: 同じモデルで粘らず次の候補へ
+                    print(f"[gemini] {model} が混雑中({r.status_code})。次の候補へ")
+                    last_err = f"{r.status_code} for {model}"
                     break
                 if r.status_code == 429:
                     wait = 20 * (attempt + 1)
@@ -101,6 +106,11 @@ def generate_json(system_prompt: str, user_prompt: str, schema: dict | None = No
                 text = r.json()["candidates"][0]["content"]["parts"][0]["text"]
                 print(f"[gemini] model={model}")
                 return json.loads(text)
+            except requests.Timeout as e:
+                # 応答が遅いモデルは見切って次の候補へ
+                print(f"[gemini] {model} タイムアウト。次の候補へ")
+                last_err = e
+                break
             except (requests.RequestException, KeyError, json.JSONDecodeError, IndexError) as e:
                 last_err = e
                 print(f"[gemini] {model} attempt {attempt+1} failed: {e}")

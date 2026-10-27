@@ -16,8 +16,8 @@ SYSTEM = f"""あなたは日本語のInstagramメディア「{BRAND_NAME}」({BR
 テーマ:「マイルを貯めて、ハワイにお得に行く」。読者は20〜40代の日本在住で、ハワイ旅行に憧れ、クレカ・ポイ活・マイルに興味がある初心者〜中級者。
 
 執筆ルール(厳守):
-1. 事実(必要マイル数・レート・料金・年会費・制度)は、提供された<facts>の内容だけを根拠にする。facts にない数値は絶対に書かない。facts に無い項目の数値欄は「要確認」とする。
-2. 誇大表現・断定的な儲け話・特定カードの過度な推奨・アフィリエイト臭い文言は禁止。
+1. 数値・制度は <facts> を主な参考にする。facts に無くても一般に知られている情報は使ってよい。変わりやすい数字には「2026年10月時点」「目安」などを添える。
+2. カード名・還元率・案件の具体例は積極的に出してよい。ただし「必ず」「絶対」のような言い切りは避ける。
 3. 口調は「親しみやすい先輩」。です・ます調。絵文字は1スライドに最大1つ。
 4. 詳細スライド(slides)は「編集記事スタイル」。1枚の情報量を多くし、余白を残さない(参考にしている人気アカウントは1枚にぎっしり書いている)。
    【全スライド必須】heading(14字以内)/ lead(結論1文・30〜40字)/ body(補足2文・50〜70字)/ conclusion(結論帯・24〜34字)/ illust(一覧から1つ)。
@@ -304,7 +304,8 @@ seed_idea を出発点に、カテゴリ「{cat['name']}」で{'カルーセル(
 既出テーマと切り口が被るなら、別の角度(初心者向け/比較/失敗談/チェックリスト/数字で見る等)に変えてください。"""
 
     schema = CAROUSEL_SCHEMA if kind == "carousel" else REEL_SCHEMA
-    required = ["topic", "slides", "caption"] if kind == "carousel" else ["topic", "frames", "caption"]
+    # topic は無くても seed で補えるので必須にしない
+    required = ["slides", "caption"] if kind == "carousel" else ["frames", "caption"]
 
     # モデルがスキーマを一部無視して返すことがあるので、必須キーが欠けていたら最大3回まで作り直す
     data = None
@@ -312,6 +313,9 @@ seed_idea を出発点に、カテゴリ「{cat['name']}」で{'カルーセル(
     for attempt in range(3):
         d = generate_json(SYSTEM, user_prompt + feedback, schema)
         print(f"[gen] keys={sorted(d.keys())}")
+        # モデルが別名で返すことがあるので寄せる
+        if not d.get("topic"):
+            d["topic"] = d.get("theme") or d.get("title") or seed
         missing = [k for k in required if not d.get(k)]
         probs = _slide_problems(d) if (kind == "carousel" and not missing) else []
         if not missing and not probs:
