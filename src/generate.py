@@ -19,9 +19,14 @@ SYSTEM = f"""あなたは日本語のInstagramメディア「{BRAND_NAME}」({BR
 1. 事実(必要マイル数・レート・料金・年会費・制度)は、提供された<facts>の内容だけを根拠にする。facts にない数値は絶対に書かない。facts に無い項目の数値欄は「要確認」とする。
 2. 誇大表現・断定的な儲け話・特定カードの過度な推奨・アフィリエイト臭い文言は禁止。
 3. 口調は「親しみやすい先輩」。です・ます調。絵文字は1スライドに最大1つ。
-4. 詳細スライド(slides)は「編集記事スタイル」。各スライドは heading(14字以内)+ lead(結論1文・40字以内)を必須とし、
-   body / big_value(巨大数字) / example(たとえば箱) / cautions(注意点1〜3) / conclusion(結論帯・34字以内) のうち2〜3個を組み合わせる。
-   強調したい語句は **二重アスタリスク** で囲む(赤字になる)。1スライドの合計文字数は180字以内。
+4. 詳細スライド(slides)は「編集記事スタイル」。1枚の情報量を多くし、余白を残さない(参考にしている人気アカウントは1枚にぎっしり書いている)。
+   【全スライド必須】heading(14字以内)/ lead(結論1文・30〜40字)/ body(補足2文・50〜70字)/ conclusion(結論帯・24〜34字)/ illust(一覧から1つ)。
+   「たとえば」箱は、できる限り『A → B』の図解にする(example_from / example_to と、それぞれに合う挿絵 key)。
+   例: 東京→ホノルル / カード100万円→1万マイル / 今→1年後。example_text はその下に出る説明(「の片道特典航空券は」など)、example_value が赤い大きな数字。
+   illust(スライドの挿絵)は本文の右に出る。内容を表す絵(地図・カード・ホテルなど)を選び、飾りだけの絵は避ける。
+   【さらに必ずどちらか】example_text+example_value(「たとえば」箱:具体例と数字) または cautions(注意点2〜3個・各16〜24字)。両方あればなお良い。
+   ゴール型スライド(big_value あり)だけは example の代わりに big_label/big_value/big_unit を使う。
+   強調したい語句は **二重アスタリスク** で囲む(赤字になる)。1スライドの合計文字数は220字以内。
 5. 既出テーマ(<posted>)と重複しない切り口にする。
 6. 1枚目(表紙)の format を次から選ぶ:
    - editorial: 標準。title_lines(2〜3行・各10字以内。強調語は **〜**、下線は __〜__)+ subtitle + bottom_box(結論1〜2行。数字を1つ入れる)。
@@ -65,15 +70,20 @@ CAROUSEL_SCHEMA = {
                    "items": {"type": "OBJECT", "properties": {
                        "heading": {"type": "STRING", "description": "14字以内。強調は**。big_value があるスライドでは heading は結論語(例: ハワイ往復)、pre_heading に前置き(例: まず目指したいのは)"},
                        "pre_heading": {"type": "STRING", "description": "big_value スライド用の前置き(12字以内・任意)"},
-                       "lead": {"type": "STRING", "description": "結論1文・40字以内"},
-                       "body": {"type": "STRING", "description": "補足・60字以内(任意)"},
+                       "lead": {"type": "STRING", "description": "結論1文・32字以内。意味の切れ目で改行\\nを1つ入れて2行にする(各16字以内)"},
+                       "body": {"type": "STRING", "description": "補足・50字以内。意味の切れ目で改行\\nを入れて2〜3行(各18字以内)。数字の途中で改行しない"},
                        "big_label": {"type": "STRING"}, "big_value": {"type": "STRING", "description": "巨大数字(例: 35,000)"}, "big_unit": {"type": "STRING"},
-                       "example_title": {"type": "STRING", "description": "既定は『たとえば』"}, "example_text": {"type": "STRING", "description": "30字以内"},
+                       "example_title": {"type": "STRING", "description": "既定は『たとえば』"}, "example_text": {"type": "STRING", "description": "具体例の前置き。24字以内。1行12字程度で改行\\nを入れる(例: 東京→沖縄の\\n片道特典航空券は)"},
                        "example_value": {"type": "STRING"}, "example_value_note": {"type": "STRING"},
-                       "cautions": {"type": "ARRAY", "items": {"type": "STRING"}, "description": "各24字以内・最大3"},
-                       "conclusion": {"type": "STRING", "description": "結論帯・34字以内"},
+                       "example_icon": {"type": "STRING", "enum": ["bulb", "clock", "calendar", "card", "coin", "check", "plane", "warn", "hotel", "yen", "gift"], "description": "A→B図解を使わないとき、補足の横に出す丸アイコン"},
+                       "example_from": {"type": "STRING", "description": "たとえば箱の図解『A → B』の A(6字以内。例: 東京 / カード100万円 / 今)。A→B で表せない例なら空"},
+                       "example_to": {"type": "STRING", "description": "図解の B(6字以内。例: ホノルル / 1万マイル / 1年後)"},
+                       "example_from_illust": {"type": "STRING", "description": "A の横に描く挿絵 key(<illusts> から。合うものが無ければ空)"},
+                       "example_to_illust": {"type": "STRING", "description": "B の横に描く挿絵 key(<illusts> から。合うものが無ければ空)"},
+                       "cautions": {"type": "ARRAY", "items": {"type": "STRING"}, "description": "各18字以内(1行で収まる長さ)・2〜3個"},
+                       "conclusion": {"type": "STRING", "description": "結論帯・30字以内。意味の切れ目で改行\\nを1つ入れて2行にする(各16字以内)"},
                        "illust": {"type": "STRING", "description": "<illusts> の key から内容に最も合う挿絵を1つ(無ければ空)"}},
-                       "required": ["heading", "lead"]}},
+                       "required": ["heading", "lead", "body", "conclusion", "illust"]}},
         "cover_illust": {"type": "STRING", "description": "表紙用の挿絵 key(任意)"},
         "cta_text": {"type": "STRING", "description": "最終スライドの一言。24字以内・1文"},
         "caption": {"type": "STRING", "description": "キャプション。冒頭1行で結論、要点3〜5行、最後に保存を促す一言。ハッシュタグは含めない。400字以内"},
@@ -170,6 +180,60 @@ def recent_topics(n=40) -> str:
     return "\n".join(f"- {p['topic']}" for p in load_posted()[-n:]) or "(なし)"
 
 
+# カテゴリごとの既定挿絵(Gemini が選ばなかったときの保険)
+_DEFAULT_ILLUST = {
+    "miles_basics": ["coins_points", "rising_graph", "pacific_route", "smartphone_app"],
+    "hawaii_award": ["boarding_pass", "plane_takeoff", "calendar_check", "business_seat"],
+    "credit_points": ["credit_card_gold", "credit_cards_stack", "convenience_store", "smartphone_app"],
+    "hawaii_tips": ["waikiki_beach", "shave_ice_food", "rental_car", "yen_dollar", "shopping_bags"],
+    "hotel_points": ["hotel_pool", "hotel_room", "palm_sunset", "gift_box"],
+    "planning_mindset": ["calendar_check", "piggy_bank", "trophy_goal", "checklist"],
+}
+_GENERIC_ILLUST = ["lightbulb", "checklist", "pacific_route", "waikiki_beach", "coins_points", "boarding_pass", "palm_sunset", "calendar_check"]
+
+
+def _slide_problems(d: dict) -> list[str]:
+    """スライドの情報量チェック。問題があれば「何枚目に何が無いか」を返す(再生成の指示に使う)。"""
+    probs = []
+    for i, sl in enumerate(d.get("slides") or [], start=1):
+        miss = []
+        if len((sl.get("lead") or "").strip()) < 12:
+            miss.append("lead")
+        if not sl.get("big_value") and len((sl.get("body") or "").strip()) < 20:
+            miss.append("body")
+        if not (sl.get("example_text") or sl.get("cautions") or sl.get("big_value")):
+            miss.append("example_text または cautions")
+        if len((sl.get("conclusion") or "").strip()) < 8:
+            miss.append("conclusion")
+        if not sl.get("illust"):
+            miss.append("illust")
+        if miss:
+            probs.append(f"slides[{i}] に {', '.join(miss)} が不足")
+    return probs
+
+
+def _fill_slide_defaults(d: dict, category_key: str):
+    """再生成しても埋まらなかった欄に保険の値を入れ、空白だらけのスライドを防ぐ。"""
+    ok = list(available_illusts().keys())
+    prefs = [k for k in _DEFAULT_ILLUST.get(category_key, []) + _GENERIC_ILLUST if k in ok]
+    used = set()
+    for i, sl in enumerate(d.get("slides") or []):
+        if not sl.get("illust") or sl["illust"] not in ok:
+            cand = [k for k in prefs if k not in used] or prefs or ok
+            sl["illust"] = cand[i % len(cand)] if cand else ""
+        used.add(sl.get("illust"))
+        if not sl.get("conclusion"):
+            sl["conclusion"] = sl.get("lead") or sl.get("heading") or ""
+        if not (sl.get("example_text") or sl.get("cautions") or sl.get("big_value")):
+            # body を「ポイント」箱に昇格させて本文は lead に寄せる
+            if sl.get("body"):
+                sl["example_title"] = sl.get("example_title") or "ポイント"
+                sl["example_text"] = sl["body"]
+                sl["body"] = ""
+            else:
+                sl["cautions"] = ["最新の条件は公式サイトで要確認"]
+
+
 def _sanitize_carousel(d: dict) -> dict:
     """format ごとの必須データが欠けていたら points にフォールバック。"""
     f = d.get("format", "editorial")
@@ -191,6 +255,9 @@ def _sanitize_carousel(d: dict) -> dict:
         sl["cautions"] = (sl.get("cautions") or [])[:3]
         if sl.get("illust") not in ok:
             sl["illust"] = ""
+        for k in ("example_from_illust", "example_to_illust"):
+            if sl.get(k) not in ok:
+                sl[k] = ""
     if d.get("cover_illust") not in ok:
         d["cover_illust"] = ""
     d["rows"] = (d.get("rows") or [])[:5]
@@ -241,20 +308,26 @@ seed_idea を出発点に、カテゴリ「{cat['name']}」で{'カルーセル(
 
     # モデルがスキーマを一部無視して返すことがあるので、必須キーが欠けていたら最大3回まで作り直す
     data = None
+    feedback = ""
     for attempt in range(3):
-        d = generate_json(SYSTEM, user_prompt + ("" if attempt == 0 else
-                          f"\n\n※前回の出力には {', '.join(k for k in required if k not in (d or {}))} が欠けていました。必ず全ての必須キーを含めてください。"),
-                          schema)
+        d = generate_json(SYSTEM, user_prompt + feedback, schema)
         print(f"[gen] keys={sorted(d.keys())}")
-        if all(d.get(k) for k in required):
+        missing = [k for k in required if not d.get(k)]
+        probs = _slide_problems(d) if (kind == "carousel" and not missing) else []
+        if not missing and not probs:
             data = d
             break
-        print(f"[gen] 必須キー不足 → 再生成 ({attempt+1}/3)")
-    if data is None:
+        data = d  # 最後の試行結果は保険として保持
+        detail = (f"必須キー {', '.join(missing)} が欠けていました。" if missing else "") + (" / ".join(probs[:8]))
+        print(f"[gen] 品質不足 → 再生成 ({attempt+1}/3): {detail}")
+        feedback = ("\n\n※前回の出力は情報量が不足していました: " + detail +
+                    "\n全スライドに heading / lead / body / conclusion / illust を入れ、さらに example_text(+example_value) か cautions(2〜3個)を必ず入れてください。空欄を残さないでください。")
+    if data is None or not all(data.get(k) for k in required):
         raise RuntimeError(f"Gemini の出力に必須キーが揃いませんでした: {required}")
     data.setdefault("topic", seed)
 
     if kind == "carousel":
+        _fill_slide_defaults(data, cat["key"])
         data = _sanitize_carousel(data)
     else:
         fr = [f for f in (data.get("frames") or []) if isinstance(f, dict) and f.get("text")]

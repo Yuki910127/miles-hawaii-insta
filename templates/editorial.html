@@ -7,7 +7,7 @@
 /* ===== 編集記事スタイル(参考レイアウト準拠・配色はブランドのティール×コーラル) ===== */
 :root { --nv: #0A5C64; --nv2: #0E7C86; --rd: #F28C28; --rd2: #E2572B; --sand: #FFF7EA; --sky: #EAF6FA; --yl: #FFF6D6; --ylb: #D9B64A; }
 .ed { position: relative; width: 1080px; height: 1350px; overflow: hidden; color: var(--nv); background: var(--sky);
-  font-feature-settings: "palt"; }
+  font-feature-settings: "palt"; word-break: auto-phrase; overflow-wrap: anywhere; line-break: strict; }
 .ed::before, .ed::after { display: none; }
 /* 空と雲 */
 .sky { position: absolute; inset: 0; background:
@@ -34,9 +34,12 @@
 .bd .toprow .texts { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 .bd .toprow .illust { width: 360px; height: 300px; flex: none; }
 .bd .wrap.with-mascot .toprow .illust { width: 300px; height: 250px; }
-.bd .box .inner { display: flex; align-items: center; gap: 20px; }
-.bd .box .inner .illust { width: 220px; height: 170px; flex: none; }
-.bd .box .inner .val { font-size: 56px; white-space: nowrap; }
+.bd .box .inner { display: flex; align-items: center; gap: 24px; }
+.bd .box .inner > div:last-child { flex: 1; min-width: 0; }
+.bd .box .inner .illust { width: 250px; height: 200px; flex: none; }
+.bd .wrap.with-mascot .box .inner .illust { width: 210px; height: 180px; }
+.bd .box .inner .val { font-size: 68px; white-space: normal; }
+.bd .wrap.with-mascot .box .inner .val { font-size: 60px; }
 .bd .box .inner .val small { white-space: normal; }
 .cv .illust-cover { position: absolute; left: 400px; bottom: 310px; width: 340px; height: 230px; z-index: 5; }
 .mascot-ed { position: absolute; z-index: 7; object-fit: contain; filter: drop-shadow(0 12px 20px rgba(0,0,0,.2)); }
@@ -53,30 +56,76 @@
 .cv .bottombox .em { font-size: 52px; }
 
 /* ---- 中面 共通 ---- */
-.bd .wrap { position: absolute; left: 50px; right: 50px; top: 170px; bottom: 170px; display: flex; flex-direction: column; gap: 18px; z-index: 5; }
-.bd .wrap.with-mascot .shrink { margin-right: 300px; }
+.bd .wrap { position: absolute; left: 44px; right: 44px; top: 48px; bottom: 60px; display: flex; flex-direction: column; gap: 24px; z-index: 5; }
+/* 中面は枠を細くして中身を広く(参考画像準拠) */
+.bd .arc-top { top: -4880px; }
+.bd .arc-bottom { top: 1280px; }
+.bd .brandtag { display: none; }
+.bd .pager { top: 28px; right: 40px; }
+.bd .texts { padding-right: 20px; max-width: 780px; }
+/* 参考画像どおり、箱の幅は揃えない(たとえば箱・注意点は狭め、結論帯は横いっぱい)。マスコットは箱の上に重ねる */
+.bd .box { align-self: flex-start; width: 84%; }
+.bd .caut { align-self: flex-start; width: 90%; }
+.bd .wrap.with-mascot .box { width: 70%; }
+.bd .wrap.with-mascot .caut { width: 74%; }
+.bd .wrap.with-mascot .mz { padding-right: 0; }   /* マスコットと重なる帯だけ文字を右に寄せない */
+.bd .wrap.with-mascot .shrink { margin-right: 0; }
 .bd .hbox { align-self: flex-start; background: #fff; border: 6px solid var(--nv); border-radius: 24px; padding: 14px 34px 14px 20px; display: flex; align-items: center; gap: 18px; box-shadow: 0 8px 0 rgba(10,92,100,.15); }
-.bd .hbox .num { width: 66px; height: 66px; border-radius: 50%; background: var(--rd2); color: #fff; font-weight: 900; font-size: 40px; display: flex; align-items: center; justify-content: center; flex: none; }
-.bd .hbox .t { font-size: 60px; font-weight: 900; line-height: 1.15; }
-.bd .para { font-size: 36px; line-height: 1.55; font-weight: 800; }
-.bd .para.small { font-size: 32px; font-weight: 700; }
+.bd .hbox .num { width: 76px; height: 76px; border-radius: 50%; background: var(--rd2); color: #fff; font-weight: 900; font-size: 40px; display: flex; align-items: center; justify-content: center; flex: none; }
+.bd .hbox .t { font-size: 70px; font-weight: 900; line-height: 1.15; }
+.bd .para { font-size: 50px; line-height: 1.38; font-weight: 900; }
+.bd .para.small { font-size: 44px; font-weight: 800; }
 .bd .box { position: relative; background: #fff; border: 6px solid var(--nv); border-radius: 26px; padding: 26px 30px; box-shadow: 0 8px 0 rgba(10,92,100,.12); }
 .bd .box .tag { position: absolute; left: -6px; top: -30px; background: var(--rd2); color: #fff; font-weight: 900; font-size: 28px; padding: 6px 24px; border-radius: 14px 14px 14px 0; }
-.bd .box .txt { font-size: 32px; line-height: 1.5; font-weight: 800; }
-.bd .box .val { font-size: 64px; font-weight: 900; color: var(--rd2); line-height: 1.1; margin-top: 10px; }
-.bd .box .val small { font-size: 28px; color: var(--nv); margin-left: 10px; font-weight: 800; }
+.bd .box .txt { font-size: 40px; line-height: 1.4; font-weight: 800; }
+.bd .box .val { font-size: 76px; font-weight: 900; color: var(--rd2); line-height: 1.1; margin-top: 10px; }
+.bd .box .val small { font-size: 32px; color: var(--nv); margin-left: 10px; font-weight: 800; white-space: nowrap; }
 .bd .caut { position: relative; background: #fff; border: 6px solid var(--nv); border-radius: 26px; padding: 56px 30px 22px; box-shadow: 0 8px 0 rgba(10,92,100,.12); }
 .bd .caut .tag { position: absolute; left: -6px; top: -6px; background: #1F2A30; color: #fff; font-weight: 900; font-size: 26px; padding: 8px 22px; border-radius: 20px 0 14px 0; }
-.bd .caut li { list-style: none; font-size: 30px; font-weight: 800; line-height: 1.5; padding-left: 36px; position: relative; }
+.bd .caut li { list-style: none; font-size: 38px; font-weight: 800; line-height: 1.5; padding-left: 36px; position: relative; }
 .bd .caut li::before { content: "•"; position: absolute; left: 8px; }
 .bd .caut.yellow { background: var(--yl); border: 5px dashed var(--ylb); padding: 22px 30px 22px 100px; }
 .bd .caut.yellow .tag { display: none; }
 .bd .caut.yellow::before { content: "!"; position: absolute; left: 26px; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; background: #E0B400; color: #fff; font-weight: 900; font-size: 34px; display: flex; align-items: center; justify-content: center; }
-.bd .concl { margin-top: auto; background: #fff; border: 6px solid var(--nv); border-radius: 26px; padding: 26px 30px 26px 110px; font-size: 36px; font-weight: 900; line-height: 1.45; position: relative; box-shadow: 0 8px 0 rgba(10,92,100,.12); }
+.bd .concl { margin-top: auto; background: #fff; border: 6px solid var(--nv); border-radius: 26px; padding: 28px 30px 28px 120px; font-size: 46px; font-weight: 900; line-height: 1.45; position: relative; box-shadow: 0 8px 0 rgba(10,92,100,.12); }
 .bd .concl::before { content: "✈"; position: absolute; left: 32px; top: 50%; transform: translateY(-50%); color: var(--nv); font-size: 56px; }
 .bd .concl.band { background: var(--nv); color: #fff; border-color: var(--nv); }
 .bd .concl.band::before { content: "⚑"; color: var(--rd2); }
 .bd .concl.band .em { color: #FFD166; }
+/* たとえば: A → B 図解 */
+.bd .route-ex { display: flex; align-items: center; gap: 10px; padding: 6px 0 2px; }
+.bd .route-ex .end { display: flex; flex-direction: column; align-items: center; flex: none; width: 210px; }
+.bd .route-ex .end .illust { width: 200px; height: 130px; }
+.bd .route-ex .end .lb { font-size: 46px; font-weight: 900; line-height: 1.1; white-space: nowrap; }
+.bd .route-ex .arrow { flex: 1; position: relative; height: 60px; }
+.bd .route-ex .arrow svg { width: 100%; height: 60px; }
+.bd .route-ex .arrow .pl { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-55%); font-size: 72px; color: var(--nv); background: #fff; padding: 0 8px; line-height: 1; }
+.bd .ex-under { text-align: center; margin-top: 6px; }
+.bd .ex-under .txt { font-size: 36px; }
+.bd .ex-under .val { margin-top: 0; }
+/* 本文右の挿絵(参考の地図の位置) */
+.bd .toprow .illust { width: 300px; height: 260px; }
+.bd .wrap.with-mascot .toprow .illust { width: 300px; height: 260px; }
+/* 文字だけのポイント(箱なし) */
+.bd .pointrow { display: flex; align-items: center; gap: 26px; padding: 6px 0; }
+.bd .pointrow .pic { width: 120px; height: 120px; border-radius: 50%; background: var(--rd2); padding: 24px; flex: none; box-shadow: 0 8px 0 rgba(226,87,43,.18); }
+.bd .pointrow .pt { display: table; font-size: 30px; font-weight: 900; color: var(--rd2); letter-spacing: .08em; margin-bottom: 4px; }
+.bd .pointrow .pb { font-size: 46px; font-weight: 900; line-height: 1.38;
+  background: linear-gradient(transparent 62%, #FFE2B8 62%); display: inline; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.bd .pointrow .val { font-size: 72px; font-weight: 900; color: var(--rd2); line-height: 1.1; margin-top: 6px; }
+.bd .pointrow .val small { font-size: 32px; color: var(--nv); margin-left: 8px; }
+/* 注意点のメモ風(枠なし・黄色の付箋) */
+.bd .caut.memo { background: var(--yl); border: 0; border-left: 14px solid #E0B400; border-radius: 10px; box-shadow: none; padding: 60px 30px 20px 34px; }
+.bd .caut.memo .tag { background: #E0B400; color: #fff; left: 0; top: 0; border-radius: 0 0 14px 0; }
+.bd .irow .ic { padding: 14px; }
+/* 情報量が少ないスライドの保険: 文字・挿絵を大きくして余白を埋める */
+.bd .wrap.thin { justify-content: space-evenly; }
+.bd .wrap.thin .concl { margin-top: 0; }
+.bd .wrap.thin .para { font-size: 42px; }
+.bd .wrap.thin .para.small { font-size: 36px; }
+.bd .wrap.thin .toprow .illust { width: 440px; height: 360px; }
+.bd .wrap.thin .box .txt { font-size: 36px; }
+.bd .wrap.thin .caut li { font-size: 34px; }
 /* ゴール型(巨大数字) */
 .bd .irow { display: flex; align-items: center; gap: 20px; background: #fff; border: 6px solid var(--nv); border-radius: 24px; padding: 14px 24px; font-size: 30px; font-weight: 800; line-height: 1.45; box-shadow: 0 8px 0 rgba(10,92,100,.12); }
 .bd .irow .ic { width: 72px; height: 72px; border-radius: 50%; background: var(--nv); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 38px; flex: none; }
@@ -98,6 +147,22 @@
 .ct .act { border: 5px solid var(--nv); border-radius: 20px; padding: 14px 26px; font-size: 32px; font-weight: 900; background: #fff; }
 </style>
 </head>
+{% macro icon(name, color="#fff") -%}
+<svg viewBox="0 0 48 48" width="100%" height="100%" fill="none" stroke="{{ color }}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+{%- if name == "clock" -%}<circle cx="24" cy="24" r="17"/><path d="M24 14v11l7 5"/>
+{%- elif name == "calendar" -%}<rect x="8" y="11" width="32" height="29" rx="4"/><path d="M8 20h32M16 7v8M32 7v8M17 30l5 5 9-10"/>
+{%- elif name == "card" -%}<rect x="6" y="12" width="36" height="25" rx="4"/><path d="M6 20h36M12 30h10"/>
+{%- elif name == "coin" -%}<ellipse cx="24" cy="15" rx="14" ry="6"/><path d="M10 15v9c0 3.3 6.3 6 14 6s14-2.7 14-6v-9M10 24v9c0 3.3 6.3 6 14 6s14-2.7 14-6v-9"/>
+{%- elif name == "check" -%}<circle cx="24" cy="24" r="17"/><path d="M16 24l6 6 11-12"/>
+{%- elif name == "plane" -%}<path d="M6 27l36-13-9 22-8-7-6 8-1-10z"/>
+{%- elif name == "warn" -%}<path d="M24 7l19 33H5z"/><path d="M24 19v10M24 34v1"/>
+{%- elif name == "hotel" -%}<path d="M8 40V12h20v28M28 20h12v20M14 18h2M20 18h2M14 25h2M20 25h2M14 32h2M20 32h2"/>
+{%- elif name == "yen" -%}<circle cx="24" cy="24" r="17"/><path d="M17 14l7 10 7-10M24 24v12M18 25h12M18 31h12"/>
+{%- elif name == "gift" -%}<rect x="8" y="18" width="32" height="22" rx="2"/><path d="M6 18h36M24 18v22M24 18c-4-8-12-8-10-2s10 2 10 2c4-8 12-8 10-2s-10 2-10 2"/>
+{%- else -%}<path d="M17 33h14M19 39h10M24 6a12 12 0 0 0-7 22v5h14v-5a12 12 0 0 0-7-22z"/>
+{%- endif -%}
+</svg>
+{%- endmacro %}
 <body>
 <div class="ed {{ 'cv' if type == 'cover' else ('ct' if type == 'cta' else 'bd') }}">
   <div class="sky"></div>
@@ -124,43 +189,54 @@
     {% if post.bottom_box %}<div class="bottombox">{{ post.bottom_box | em }}</div>{% endif %}
 
   {% elif type == "body" %}
-    {% if deco.plane %}<img class="deco" src="{{ deco.plane }}" style="right:40px; top:110px; width:220px;">{% endif %}
-    <svg class="route" width="360" height="120" viewBox="0 0 360 120" style="right:240px; top:120px;"><path d="M10 110 C 120 60, 220 30, 350 20" fill="none" stroke="#0A5C64" stroke-width="4" stroke-dasharray="10 12" stroke-linecap="round"/></svg>
-    <div class="wrap {% if mascot %}with-mascot{% endif %}">
+    {% if deco.plane %}<img class="deco" src="{{ deco.plane }}" style="right:150px; top:30px; width:260px;">{% endif %}
+    <svg class="route" width="360" height="120" viewBox="0 0 360 120" style="right:380px; top:40px;"><path d="M10 110 C 120 60, 220 30, 350 20" fill="none" stroke="#0A5C64" stroke-width="4" stroke-dasharray="10 12" stroke-linecap="round"/></svg>
+    {% set blocks = (1 if slide.lead else 0) + (1 if slide.body else 0) + (1 if slide.example_text else 0) + (1 if slide.cautions else 0) + (1 if slide.conclusion else 0) %}
+    <div class="wrap {% if mascot %}with-mascot{% endif %} {% if blocks <= 3 and not slide.big_value %}thin{% endif %}">
       {% if slide.big_value %}
         {# ---- ゴール型: 大見出し + アイコン行 + 巨大数字 + 注意(黄) + 紺の結論帯 ---- #}
         <div class="hgoal">{% if slide.pre_heading %}<div class="pre">{{ slide.pre_heading }}</div>{% endif %}<div class="main">{{ slide.heading | em }}</div></div>
         <div class="toprow shrink">
-          {% if slide.lead %}<div class="irow" style="flex:1"><div class="ic">📋</div><div>{{ slide.lead | em }}</div></div>{% endif %}
+          {% if slide.lead %}<div class="irow" style="flex:1"><div class="ic">{{ icon("check") }}</div><div>{{ slide.lead | em }}</div></div>{% endif %}
           {% if illust %}<img class="illust" src="{{ illust }}" alt="" style="width:220px;height:160px">{% endif %}
         </div>
         <div class="bignum shrink">{% if slide.big_label %}<div class="lbl">{{ slide.big_label }}</div>{% endif %}<div class="v">{{ slide.big_value }}</div>{% if slide.big_unit %}<div class="u">{{ slide.big_unit }}</div>{% endif %}</div>
-        {% if slide.body %}<div class="irow shrink"><div class="ic">🌴</div><div>{{ slide.body | em }}</div></div>{% endif %}
+        {% if slide.body %}<div class="irow shrink"><div class="ic">{{ icon("plane") }}</div><div>{{ slide.body | em }}</div></div>{% endif %}
         {% if slide.cautions %}<ul class="caut yellow shrink">{% for c in slide.cautions[:2] %}<li>{{ c | em }}</li>{% endfor %}</ul>{% endif %}
         {% if slide.conclusion %}<div class="concl band shrink">{{ slide.conclusion | em }}</div>{% endif %}
       {% else %}
         {# ---- 解説型: 見出しボックス + 本文 + たとえば + 注意点 + 結論 ---- #}
         <div class="hbox"><div class="num">{{ idx - 1 }}</div><div class="t">{{ slide.heading | em }}</div></div>
-        <div class="toprow {% if not illust %}shrink{% endif %}">
+        <div class="toprow">
           <div class="texts">
             {% if slide.lead %}<div class="para">{{ slide.lead | em }}</div>{% endif %}
             {% if slide.body %}<div class="para small">{{ slide.body | em }}</div>{% endif %}
           </div>
-          {% if illust and not slide.example_text %}<img class="illust" src="{{ illust }}" alt="">{% endif %}
+          {% if illust %}<img class="illust" src="{{ illust }}" alt="">{% endif %}
         </div>
-        {% if slide.example_text %}
+        {% if slide.example_text and slide.example_from and slide.example_to %}
         <div class="box shrink"><div class="tag">{{ slide.example_title or "たとえば" }}</div>
-          <div class="inner">{% if illust %}<img class="illust" src="{{ illust }}" alt="">{% endif %}
-            <div><div class="txt">{{ slide.example_text | em }}</div>{% if slide.example_value %}<div class="val">{{ slide.example_value }}{% if slide.example_value_note %}<small>{{ slide.example_value_note }}</small>{% endif %}</div>{% endif %}</div>
-          </div></div>
+          <div class="route-ex">
+            <div class="end">{% if from_illust %}<img class="illust" src="{{ from_illust }}" alt="">{% endif %}<div class="lb">{{ slide.example_from }}</div></div>
+            <div class="arrow"><svg viewBox="0 0 300 60" preserveAspectRatio="none"><line x1="0" y1="30" x2="280" y2="30" stroke="#0A5C64" stroke-width="5" stroke-dasharray="12 10"/><path d="M280 18 L300 30 L280 42 Z" fill="#0A5C64"/></svg><span class="pl">✈</span></div>
+            <div class="end">{% if to_illust %}<img class="illust" src="{{ to_illust }}" alt="">{% endif %}<div class="lb">{{ slide.example_to }}</div></div>
+          </div>
+          <div class="ex-under"><div class="txt">{{ slide.example_text | em }}</div>{% if slide.example_value %}<div class="val"><span class="fitw" style="white-space:nowrap;display:inline-block;max-width:100%">{{ slide.example_value }}</span>{% if slide.example_value_note %}<small>{{ slide.example_value_note }}</small>{% endif %}</div>{% endif %}</div>
+        </div>
+        {% elif slide.example_text %}
+        {# 文字だけの補足は箱にしない: 丸アイコン + 大きめの文字 + 下線マーカー #}
+        <div class="pointrow shrink">
+          <div class="pic">{{ icon(slide.example_icon or "bulb") }}</div>
+          <div class="ptx">{% if slide.example_title %}<div class="pt">{{ slide.example_title }}</div>{% endif %}<div class="pb">{{ slide.example_text | em }}</div>{% if slide.example_value %}<div class="val"><span class="fitw" style="white-space:nowrap;display:inline-block;max-width:100%">{{ slide.example_value }}</span>{% if slide.example_value_note %}<small>{{ slide.example_value_note }}</small>{% endif %}</div>{% endif %}</div>
+        </div>
         {% endif %}
         {% if slide.cautions %}
-        <ul class="caut shrink"><div class="tag">⚠ 注意点</div>{% for c in slide.cautions[:3] %}<li>{{ c | em }}</li>{% endfor %}</ul>
+        <ul class="caut shrink mz {% if not (slide.example_from and slide.example_to) %}memo{% endif %}"><div class="tag">⚠ 注意点</div>{% for c in slide.cautions[:3] %}<li>{{ c | em }}</li>{% endfor %}</ul>
         {% endif %}
         {% if slide.conclusion %}<div class="concl shrink">{{ slide.conclusion | em }}</div>{% endif %}
       {% endif %}
     </div>
-    {% if mascot %}<img class="mascot-ed" src="{{ mascot }}" style="right:20px; bottom:170px; width:320px; height:320px;">{% endif %}
+    {% if mascot %}<img class="mascot-ed" src="{{ mascot }}" style="right:-30px; bottom:200px; width:520px; height:520px;">{% endif %}
 
   {% else %}
     <div class="wrap">
@@ -172,5 +248,23 @@
     </div>
   {% endif %}
 </div>
+<script>
+(function(){
+  // 1行で収めたい要素(数字など)は親の幅に収まるまで文字を縮める
+  document.querySelectorAll('.fitw').forEach(function(el){
+    var parent = el.parentElement, size = parseFloat(getComputedStyle(el).fontSize), g = 0;
+    while (el.scrollWidth > parent.clientWidth - 2 && size > 30 && g++ < 30) { size -= 2; el.style.fontSize = size + 'px'; }
+  });
+  var w = document.querySelector('.bd .wrap, .ct .wrap'); if(!w) return;
+  var scale = 1, guard = 0;
+  function over(){ if (w.scrollHeight > w.clientHeight + 2) return true;
+    var o=false; w.querySelectorAll('.hbox,.box,.caut,.concl,.irow,.bignum,.para,.pointrow').forEach(function(el){ if (el.scrollHeight > el.clientHeight + 4) o=true; }); return o; }
+  while (over() && guard++ < 12) { scale -= 0.04; w.style.fontSize = (scale*100) + '%';
+    w.querySelectorAll('[class]').forEach(function(el){ if(!el.dataset.fs){ el.dataset.fs = getComputedStyle(el).fontSize; } });
+    w.querySelectorAll('.hbox .t,.para,.box .txt,.box .val,.caut li,.concl,.irow,.pointrow .pb,.pointrow .val,.hgoal .pre,.hgoal .main,.bignum .v,.bignum .u,.bignum .lbl,.box .tag,.caut .tag').forEach(function(el){
+      el.style.fontSize = (parseFloat(el.dataset.fs) * scale) + 'px'; });
+  }
+})();
+</script>
 </body>
 </html>

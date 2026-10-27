@@ -146,3 +146,30 @@ def generate_grounded(prompt: str, retries: int = 2) -> tuple[str, list[dict]]:
                 print(f"[gemini] grounded {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
     raise RuntimeError(f"グラウンディング生成に失敗: {last_err}")
+
+
+def read_image_text(image_path, retries: int = 2) -> str:
+    """画像内の文字を Gemini(無料枠)で書き起こす。失敗時は空文字。"""
+    import base64, mimetypes
+    if not GEMINI_API_KEY:
+        return ""
+    mime = mimetypes.guess_type(str(image_path))[0] or "image/png"
+    data = base64.b64encode(open(image_path, "rb").read()).decode()
+    body = {"contents": [{"role": "user", "parts": [
+        {"inline_data": {"mime_type": mime, "data": data}},
+        {"text": "この画像に書かれている日本語・英数字の文字をすべて、見えるとおりに書き起こしてください。説明は不要で、文字だけを改行区切りで出力してください。"}]}],
+        "generationConfig": {"temperature": 0}}
+    for model in candidate_models()[:4]:
+        for attempt in range(retries):
+            try:
+                r = requests.post(f"{BASE}/models/{model}:generateContent", params={"key": GEMINI_API_KEY}, json=body, timeout=120)
+                if r.status_code == 404:
+                    break
+                if r.status_code == 429:
+                    time.sleep(20 * (attempt + 1)); continue
+                r.raise_for_status()
+                return "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
+            except Exception as e:
+                print(f"[gemini] OCR {model} failed: {e}")
+                time.sleep(5)
+    return ""

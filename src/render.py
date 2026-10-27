@@ -126,7 +126,9 @@ def render_carousel(post: dict, slug: str) -> list[Path]:
         m = pick_mascot(SLIDE_POSES[i % len(SLIDE_POSES)]) if i % 2 == 0 else None
         pages.append(_render_html("editorial.html", {"type": "body", "post": post, "slide": s, "idx": i, "total": total,
                                                      "mascot": m, "deco": deco, "bg_photo": None,
-                                                     "illust": pick_illust(s.get("illust"))}))
+                                                     "illust": pick_illust(s.get("illust")),
+                                                     "from_illust": pick_illust(s.get("example_from_illust")),
+                                                     "to_illust": pick_illust(s.get("example_to_illust"))}))
     pages.append(_render_html("editorial.html", {"type": "cta", "post": post, "idx": total, "total": total,
                                                  "mascot": pick_mascot("happy"), "deco": deco, "bg_photo": None}))
 
