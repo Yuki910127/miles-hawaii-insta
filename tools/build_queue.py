@@ -38,6 +38,39 @@ def build(mod_name: str):
             "caption": p["caption"], "tags": p.get("tags", []),
             "expect": [t for _, t in p["texts"]],
         }
+    # 冒頭の一言(tools/hooks.py)を全件に付与
+    try:
+        from hooks import HOOKS
+    except ImportError:
+        HOOKS = {}
+    for k, it in by_id.items():
+        if k in HOOKS:
+            it["hook"] = HOOKS[k]
+    # 2本を1枚にまとめた画像(tools/merges.py)は、キャプション等を結合して吸収側を外す
+    try:
+        from merges import MERGES
+    except ImportError:
+        MERGES = {}
+    for keep, absorbed in MERGES.items():
+        if keep not in by_id:
+            continue
+        base = by_id[keep]
+        for a in absorbed:
+            if a not in by_id:
+                continue
+            src = by_id.pop(a)
+            base["topic"] = base["topic"].split(" ＋ ")[0] + " ＋ " + src["topic"] if " ＋ " not in base["topic"] else base["topic"] + " ＋ " + src["topic"]
+            base["caption"] = base["caption"].rstrip() + "\n\n――――\n\n" + src["caption"].strip()
+            base["tags"] = list(dict.fromkeys(base.get("tags", []) + src.get("tags", [])))[:5]
+            base["expect"] = base.get("expect", []) + src.get("expect", [])
+    try:
+        from priority import PRIORITY
+    except ImportError:
+        PRIORITY = []
+    for k, it in by_id.items():
+        it.pop("priority", None)
+        if k in PRIORITY:
+            it["priority"] = 1
     items = [by_id[k] for k in sorted(by_id)]
     qpath.write_text("# 自動生成(tools/build_queue.py)。画像は assets/queue/<file>.png|jpg|webp\n" +
                      yaml.safe_dump({"items": items}, allow_unicode=True, sort_keys=False, width=1000), encoding="utf-8")

@@ -18,6 +18,16 @@ def _pick(dir_: Path, exts: tuple[str, ...]) -> Path | None:
     return random.choice(files) if files else None
 
 
+def pick_music() -> Path | None:
+    """BGM を選ぶ。アップロードされた曲(合成した uke_*.mp3 以外)があればそちらを優先。"""
+    files = [p for p in (ASSETS / "music").glob("*") if p.suffix.lower() in (".mp3", ".m4a", ".wav", ".aac")]
+    own = [p for p in files if not p.name.startswith("uke_")]
+    pool = own or files
+    pick = random.choice(pool) if pool else None
+    print(f"[music] {pick.name if pick else 'なし(無音)'}")
+    return pick
+
+
 def _video_size(path: Path) -> tuple[int, int]:
     """ffprobe で幅・高さ(回転メタデータを考慮)を返す。失敗時は (0, 0)。"""
     import json
@@ -66,7 +76,7 @@ def build_reel(frames: list[Path], slug: str, kinds: list[str] | None = None) ->
     total = sum(durations)
 
     bg = _pick(ASSETS / "reel_bg", (".mp4", ".mov"))
-    music = _pick(ASSETS / "music", (".mp3", ".m4a", ".wav"))
+    music = pick_music()
 
     cmd = ["ffmpeg", "-y", "-loglevel", "error"]
     # input 0: 背景

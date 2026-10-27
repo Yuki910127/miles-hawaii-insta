@@ -56,7 +56,7 @@ def run_queue():
     print(f"=== {slug} (DRY_RUN={DRY_RUN}) topic={item['topic']} ===")
     hashtags = build_hashtags(load_yaml("hashtags.yml"), item.get("category", ""), item.get("tags", []))
     caption = item["caption"].strip() + "\n.\n.\n.\n" + " ".join(hashtags)
-    video = q.build_still_reel(img, slug)
+    video = q.build_still_reel(img, slug, item.get("hook"))
     cover = q.cover_jpg(img, slug)
     urls = publish_files([video, cover], f"media: {slug}")
     media_id = publish_reel(urls[0], caption, cover_url=urls[1])

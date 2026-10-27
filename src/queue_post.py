@@ -31,7 +31,7 @@ def image_for(item: dict) -> Path | None:
 
 def next_item(posted: list[dict], skip: set | None = None) -> tuple[dict, Path] | None:
     done = {p.get("queue_id") for p in posted if p.get("queue_id") is not None}
-    for it in load_queue():
+    for it in sorted(load_queue(), key=lambda x: (-int(x.get("priority", 0)), x["id"])):
         if it["id"] in done or (skip and it["id"] in skip):
             continue
         img = image_for(it)
@@ -69,21 +69,42 @@ def verify(item: dict, img: Path) -> list[str]:
     return missing
 
 
-def build_still_reel(img: Path, slug: str) -> Path:
-    """静止画 → ゆっくりズーム(1.00→1.03)+BGM の 9 秒リール。"""
+HOOK_SEC = 1.3
+
+
+def build_still_reel(img: Path, slug: str, hook_text: str | None = None) -> Path:
+    """静止画 → (冒頭の一言 1.3秒) → 図解をゆっくりズーム(1.00→1.03)+BGM のリール。"""
     out = OUT / f"{slug}.mp4"
-    music = [p for p in (ASSETS / "music").glob("*") if p.suffix.lower() in (".mp3", ".m4a", ".wav")]
+    from reel import pick_music
+    music_file = pick_music()
+    music = [music_file] if music_file else []
     fps, frames = 30, REEL_SEC * 30
-    vf = ("scale=2160:3840:force_original_aspect_ratio=increase:flags=lanczos,crop=2160:3840,"
-          f"zoompan=z='1+0.03*on/{frames}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={frames}:s=1080x1920:fps={fps},"
-          "format=yuv420p")
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-loop", "1", "-i", str(img)]
+    main_vf = ("scale=2160:3840:force_original_aspect_ratio=increase:flags=lanczos,crop=2160:3840,"
+               f"zoompan=z='1+0.03*on/{frames}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={frames}:s=1080x1920:fps={fps},"
+               "format=yuv420p,setsar=1")
+    # zoompan は1枚の入力から d フレームを生成するので -loop は付けない
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", str(img)]
+    if hook_text:
+        from hook import make_hook_frame
+        hook_img = make_hook_frame(img, hook_text, OUT / f"{slug}_hook.jpg")
+        cmd += ["-i", str(hook_img)]
+        a_idx = 2
+        total = HOOK_SEC + REEL_SEC
+        # 一言(少し寄る)→ 0.3秒でクロスフェードして図解へ
+        fc = (f"[0:v]{main_vf}[main];"
+              f"[1:v]scale=1080:1920,zoompan=z='1.06-0.06*on/{int((HOOK_SEC+0.3)*fps)}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
+              f"d={int((HOOK_SEC+0.3)*fps)}:s=1080x1920:fps={fps},format=yuv420p,setsar=1[hook];"
+              f"[hook][main]xfade=transition=fade:duration=0.3:offset={HOOK_SEC},format=yuv420p[v]")
+    else:
+        a_idx = 1
+        total = REEL_SEC
+        fc = f"[0:v]{main_vf}[v]"
     if music:
         cmd += ["-stream_loop", "-1", "-i", str(random.choice(music))]
     else:
         cmd += ["-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100"]
-    cmd += ["-vf", vf, "-map", "0:v", "-map", "1:a", "-t", str(REEL_SEC),
-            "-af", f"afade=t=out:st={REEL_SEC-1.5}:d=1.5",
+    cmd += ["-filter_complex", fc, "-map", "[v]", "-map", f"{a_idx}:a", "-t", f"{total:.2f}",
+            "-af", f"afade=t=out:st={total-1.5:.2f}:d=1.5",
             "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-profile:v", "high", "-level", "4.1",
             "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-movflags", "+faststart", str(out)]
     subprocess.run(cmd, check=True)
